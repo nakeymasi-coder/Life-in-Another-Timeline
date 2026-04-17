@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Life in Another Timeline</title>
+<style>
+  :root {
+    --bg1:#06060b;
+    --bg2:#110f1b;
+    --panel:rgba(14,15,24,.78);
+    --panel2:rgba(20,22,34,.88);
+    --line:rgba(255,255,255,.10);
+    --text:#f8f5ff;
+    --muted:#bdb5d3;
+    --gold:#f0c96b;
+    --gold2:#ffd98d;
+    --violet:#9c73ff;
+    --pink:#ff7fd7;
+    --cyan:#8fe7ff;
+    --good:#8bffb7;
+    --danger:#ff8787;
+    --shadow:0 20px 60px rgba(0,0,0,.45);
+    --radius:22px;
+    --radius-sm:16px;
+  }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    margin:0;
+    color:var(--text);
+    font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(156,115,255,.14), transparent 24%),
+      radial-gradient(circle at 80% 20%, rgba(255,127,215,.11), transparent 18%),
+      radial-gradient(circle at 70% 80%, rgba(143,231,255,.08), transparent 20%),
+      linear-gradient(160deg,var(--bg1),var(--bg2) 45%, #0a0712 100%);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  body::before,
+  body::after {
+    content:"";
+    position:fixed;
+    inset:auto;
+    width:42vw;
+    height:42vw;
+    pointer-events:none;
+    filter:blur(60px);
+    opacity:.18;
+    border-radius:50%;
+    z-index:0;
+    animation: drift 18s ease-in-out infinite alternate;
+  }
+  body::before { top:-10vw; left:-8vw; background:radial-gradient(circle,var(--violet),transparent 65%); }
+  body::after { right:-10vw; bottom:-14vw; background:radial-gradient(circle,var(--pink),transparent 65%); animation-duration:23s; }
+  @keyframes drift { from { transform:translate3d(0,0,0) scale(1);} to { transform:translate3d(3vw,2vw,0) scale(1.1);} }
+  .stars, .dust, .rings {
+    position:fixed; inset:0; pointer-events:none; z-index:0;
+  }
+  .stars {
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(255,255,255,.8) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 65% 16%, rgba(255,255,255,.55) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 82% 70%, rgba(255,255,255,.65) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 26% 72%, rgba(255,255,255,.5) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 46% 44%, rgba(255,255,255,.38) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 92% 36%, rgba(255,255,255,.48) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 12% 88%, rgba(255,255,255,.4) 0 1px, transparent 1.5px);
+    opacity:.65;
+  }
+  .dust::before, .dust::after {
+    content:""; position:absolute; inset:-10%;
+    background:
+      radial-gradient(circle, rgba(240,201,107,.20) 0 1px, transparent 2px) 0 0/70px 70px,
+      radial-gradient(circle, rgba(255,255,255,.11) 0 1px, transparent 2px) 20px 30px/90px 90px;
+    animation: floatDust 30s linear infinite;
+    opacity:.38;
+  }
+  .dust::after { animation-duration:45s; transform:scale(1.12); opacity:.18; }
+  @keyframes floatDust { from { transform:translateY(0);} to { transform:translateY(-120px);} }
+  .rings::before, .rings::after {
+    content:"";
+    position:absolute;
+    left:50%; top:110px; transform:translateX(-50%);
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:0 0 40px rgba(156,115,255,.15), inset 0 0 40px rgba(240,201,107,.06);
+    animation: spin 20s linear infinite;
+  }
+  .rings::before { width:240px; height:240px; }
+  .rings::after { width:310px; height:310px; animation-direction:reverse; animation-duration:26s; }
+  @keyframes spin { from { transform:translateX(-50%) rotate(0);} to { transform:translateX(-50%) rotate(360deg);} }
+
+  .wrap { position:relative; z-index:1; max-width:1580px; margin:0 auto; padding:24px 18px 120px; }
+  .hero {
+    position:relative;
+    overflow:hidden;
+    padding:34px 22px 28px;
+    border:1px solid var(--line);
+    border-radius:32px;
+    background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+    backdrop-filter: blur(18px);
+    box-shadow:var(--shadow);
+  }
+  .hero::before {
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(120deg, transparent 0%, rgba(255,255,255,.06) 20%, transparent 40%);
+    transform:translateX(-120%);
+    animation: sheen 9s linear infinite;
+  }
+  @keyframes sheen { to { transform:translateX(160%);} }
+  h1 {
+    margin:0;
+    font-size:clamp(2.4rem, 6vw, 5.8rem);
+    line-height:.95;
+    letter-spacing:.02em;
+    text-transform:uppercase;
+    text-shadow:0 0 22px rgba(156,115,255,.35), 0 0 38px rgba(240,201,107,.16);
+  }
+  .accent { background:linear-gradient(90deg,var(--gold2),#fff,var(--pink)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .subtitle {
+    margin:16px 0 16px;
+    max-width:980px;
+    color:var(--muted);
+    font-size:1.02rem;
+    line-height:1.6;
+  }
+  .marquee {
+    overflow:hidden;
+    white-space:nowrap;
+    border:1px solid rgba(240,201,107,.25);
+    border-radius:999px;
+    background:rgba(240,201,107,.08);
+    padding:12px 0;
+    margin:18px 0 8px;
+  }
+  .marquee span {
+    display:inline-block;
+    padding-left:100%;
+    animation: marquee 26s linear infinite;
+    color:#fff1cb;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    font-size:.86rem;
+  }
+  @keyframes marquee { to { transform:translateX(-100%);} }
+  .portal-copy {
+    display:flex; flex-wrap:wrap; gap:12px;
+    margin-top:18px;
+  }
+  .pill {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:10px 14px;
+    border-radius:999px;
+    background:rgba(255,255,255,.06);
+    border:1px solid var(--line);
+    color:#f4ebff;
+    font-size:.88rem;
+  }
+  .sticky-controls {
+    position:sticky;
+    top:10px;
+    z-index:20;
+    margin-top:16px;
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:24px;
+    background:rgba(8,9,16,.78);
+    backdrop-filter:blur(16px);
+    box-shadow:0 15px 45px rgba(0,0,0,.35);
+    padding:12px;
+  }
+  .preset-row,
+  .action-row,
+  .export-row {
+    display:flex; flex-wrap:wrap; gap:10px;
+    align-items:center;
+  }
+  .preset-row { margin-bottom:12px; }
+  .label-chip {
+    display:inline-flex; align-items:center;
+    padding:10px 12px;
+    font-weight:700;
+    letter-spacing:.03em;
+    color:#fff1cb;
+    background:rgba(240,201,107,.10);
+    border:1px solid rgba(240,201,107,.25);
+    border-radius:14px;
+  }
+  button, select, input, textarea {
+    font:inherit;
+  }
+  button {
+    cursor:pointer;
+    border:none;
+    color:var(--text);
+    transition:.22s ease;
+  }
+  .btn {
+    position:relative;
+    overflow:hidden;
+    padding:12px 16px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.10);
+    background:linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.03));
+    box-shadow:0 10px 28px rgba(0,0,0,.25);
+    min-height:46px;
+  }
+  .btn:hover { transform:translateY(-1px); border-color:rgba(255,255,255,.22); }
+  .btn.gold { background:linear-gradient(180deg, rgba(240,201,107,.28), rgba(240,201,107,.12)); color:#fff6df; border-color:rgba(240,201,107,.34); }
+  .btn.violet { background:linear-gradient(180deg, rgba(156,115,255,.25), rgba(156,115,255,.12)); border-color:rgba(156,115,255,.34); }
+  .btn.pink { background:linear-gradient(180deg, rgba(255,127,215,.24), rgba(255,127,215,.12)); border-color:rgba(255,127,215,.34); }
+  .btn.good { background:linear-gradient(180deg, rgba(139,255,183,.20), rgba(139,255,183,.08)); border-color:rgba(139,255,183,.34); }
+  .btn.danger { background:linear-gradient(180deg, rgba(255,135,135,.20), rgba(255,135,135,.08)); border-color:rgba(255,135,135,.34); }
+  .btn.small { padding:9px 12px; min-height:auto; font-size:.9rem; }
+  .btn:active { transform:translateY(1px) scale(.99); }
+  .grid {
+    display:grid;
+    grid-template-columns:repeat(12,minmax(0,1fr));
+    gap:16px;
+    margin-top:20px;
+  }
+  .panel {
+    grid-column:span 12;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+    backdrop-filter:blur(18px);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .panel .hd {
+    padding:18px 18px 12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    border-bottom:1px solid rgba(255,255,255,.06);
+  }
+  .panel .hd h2, .panel .hd h3 {
+    margin:0;
+    font-size:1.08rem;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+  }
+  .panel .bd { padding:18px; }
+  .category-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:14px;
+  }
+  .field {
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:20px;
+    background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+    padding:14px;
+    min-height:100%;
+    position:relative;
+  }
+  .field.locked { border-color:rgba(240,201,107,.34); box-shadow:inset 0 0 0 1px rgba(240,201,107,.10); }
+  .field.active-select { border-color:rgba(156,115,255,.38); box-shadow:0 0 0 1px rgba(156,115,255,.12), 0 0 24px rgba(156,115,255,.08); }
+  .field label {
+    display:flex; justify-content:space-between; align-items:flex-start; gap:10px;
+    margin-bottom:10px; font-size:.92rem; font-weight:700; color:#fff;
+  }
+  .field .mini { font-size:.72rem; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
+  .ctrls { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  select, input[type="text"], textarea {
+    width:100%;
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:14px;
+    background:rgba(7,8,14,.76);
+    color:var(--text);
+    padding:12px 12px;
+    outline:none;
+  }
+  select:focus, input[type="text"]:focus, textarea:focus { border-color:rgba(240,201,107,.36); box-shadow:0 0 0 4px rgba(240,201,107,.08); }
+  .subtext { margin:8px 0 0; color:var(--muted); font-size:.84rem; line-height:1.45; }
+  .advanced-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:14px;
+  }
+  .toggle-group, .chip-group { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip, .toggle {
+    padding:10px 12px;
+    border-radius:999px;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.10);
+    cursor:pointer;
+    user-select:none;
+    transition:.18s ease;
+    font-size:.9rem;
+  }
+  .chip.active, .toggle.active {
+    background:linear-gradient(180deg, rgba(240,201,107,.20), rgba(240,201,107,.08));
+    border-color:rgba(240,201,107,.35);
+    color:#fff2cc;
+    box-shadow:0 0 0 1px rgba(240,201,107,.12);
+  }
+  .range-wrap { display:grid; gap:8px; }
+  input[type="range"] { width:100%; }
+  .meter {
+    height:12px; border-radius:999px; background:rgba(255,255,255,.08); overflow:hidden; border:1px solid rgba(255,255,255,.08);
+  }
+  .meter > span { display:block; height:100%; width:20%; background:linear-gradient(90deg,var(--violet),var(--pink),var(--gold)); }
+  .two-col { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+  .output-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:14px;
+  }
+  .out {
+    display:flex; flex-direction:column; min-height:100%;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:18px;
+    background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+    overflow:hidden;
+  }
+  .out .top {
+    display:flex; justify-content:space-between; gap:10px; align-items:center;
+    padding:12px 14px; border-bottom:1px solid rgba(255,255,255,.06);
+    background:rgba(255,255,255,.025);
+  }
+  .out h4 { margin:0; font-size:.95rem; text-transform:uppercase; letter-spacing:.05em; }
+  .out textarea {
+    border:none; border-radius:0; resize:vertical; min-height:180px; background:transparent; padding:14px; color:var(--text);
+  }
+  .history-list { display:grid; gap:10px; }
+  .history-item {
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    background:rgba(255,255,255,.04);
+    padding:12px;
+  }
+  .history-top { display:flex; gap:10px; justify-content:space-between; flex-wrap:wrap; align-items:center; }
+  .history-meta { color:var(--muted); font-size:.84rem; }
+  .snippet { color:#f3ecff; font-size:.92rem; margin-top:8px; line-height:1.45; }
+  details summary {
+    cursor:pointer; list-style:none; user-select:none;
+  }
+  details summary::-webkit-details-marker { display:none; }
+  .footer-note { color:var(--muted); text-align:center; margin-top:24px; font-size:.88rem; }
+  .scroll-btns {
+    position:fixed; right:16px; bottom:18px; display:grid; gap:10px; z-index:30;
+  }
+  .scroll-btns button {
+    width:52px; height:52px; border-radius:50%; border:1px solid rgba(240,201,107,.35);
+    background:linear-gradient(180deg, rgba(240,201,107,.26), rgba(156,115,255,.16));
+    box-shadow:0 0 24px rgba(240,201,107,.16), 0 0 38px rgba(156,115,255,.12);
+    font-size:1.1rem;
+  }
+  .status {
+    font-size:.88rem; color:#fff1cb; margin-left:auto;
+  }
+  .muted { color:var(--muted); }
+  .timeline-name {
+    font-size:1.02rem; font-weight:800; color:#fff4d4;
+  }
+  .small-note { font-size:.8rem; color:var(--muted); }
+  @media (min-width: 980px) {
+    .span-6 { grid-column:span 6; }
+    .span-4 { grid-column:span 4; }
+    .span-8 { grid-column:span 8; }
+    .span-12 { grid-column:span 12; }
+  }
+  @media (max-width: 760px) {
+    .two-col { grid-template-columns:1fr; }
+    .hero { padding:24px 16px; }
+    .sticky-controls { top:6px; }
+  }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="dust"></div>
+<div class="rings"></div>
+<div class="wrap">
+  <section class="hero">
+    <h1><span class="accent">Life</span> in Another <span class="accent">Timeline</span></h1>
+    <p class="subtitle">Build the alternate version of you that exists in another reality — her identity, her world, her lifestyle, her power, her conflict, her cinematic entrance, and the content that comes out of that life. Not fantasy. Just unavailable in this dimension.</p>
+    <div class="marquee"><span>✨ Alternate Selves • Luxury Realities • Cinematic Identity Shift • Main Character Portals • Storyworld Prompts • Portal Glitch Mode • Fantasy Branding • Timeline Split • ✨</span></div>
+    <div class="portal-copy">
+      <span class="pill">✨ Choose your other life</span>
+      <span class="pill">💫 Shift the timeline</span>
+      <span class="pill">👑 Build the life that found you in another reality</span>
+      <span class="pill">🪞 This version of you lives differently</span>
+    </div>
+  </section>
+
+  <section class="sticky-controls">
+    <div class="preset-row">
+      <span class="label-chip">Choose a Timeline Preset</span>
+      <select id="presetSelect" style="max-width:360px">
+        <option value="">none</option>
+      </select>
+      <button class="btn gold" id="applyPresetBtn">Open Portal</button>
+      <button class="btn violet" id="randomPresetBtn">Random Timeline</button>
+      <span class="status" id="statusText">Portal stable</span>
+    </div>
+    <div class="action-row">
+      <button class="btn gold" id="generateBtn">Generate Timeline</button>
+      <button class="btn violet" id="shiftBtn">Shift Reality</button>
+      <button class="btn pink" id="randomizeBtn">Randomize</button>
+      <button class="btn" id="lockAllBtn">Lock All</button>
+      <button class="btn" id="unlockAllBtn">Unlock All</button>
+      <button class="btn danger" id="clearBtn">Clear All</button>
+      <button class="btn good" id="saveBtn">Save Prompt</button>
+      <button class="btn" id="copyAllBtn">Copy All Outputs</button>
+      <button class="btn" id="contentSuiteBtn">Generate Content Suite</button>
+      <button class="btn" id="trailerBtn">Generate Trailer</button>
+      <button class="btn" id="soundtrackBtn">Generate Soundtrack</button>
+    </div>
+    <div class="export-row" style="margin-top:10px;">
+      <button class="btn small" id="exportTxtBtn">Download TXT</button>
+      <button class="btn small" id="exportJsonBtn">Download JSON</button>
+      <button class="btn small" id="exportCardBtn">Download Character Sheet</button>
+      <button class="btn small" id="downloadHtmlBtn">Download This HTML Again</button>
+      <span class="small-note">Everything saves locally in your browser for this file.</span>
+    </div>
+  </section>
+
+  <div class="grid">
+    <section class="panel span-12">
+      <div class="hd"><h2>Core Identity</h2><span class="muted">Big sections. Custom text boxes. Lock buttons. None first.</span></div>
+      <div class="bd"><div class="category-grid" id="coreFields"></div></div>
+    </section>
+
+    <section class="panel span-12">
+      <div class="hd"><h2>World Details</h2><span class="muted">Build the luxury portal around the character.</span></div>
+      <div class="bd"><div class="category-grid" id="worldFields"></div></div>
+    </section>
+
+    <section class="panel span-12">
+      <div class="hd"><h2>Story Engine</h2><span class="muted">This is where the pretty gets dangerous.</span></div>
+      <div class="bd"><div class="category-grid" id="storyFields"></div></div>
+    </section>
+
+    <section class="panel span-6">
+      <div class="hd"><h2>Advanced Portal Controls</h2><span class="muted">Premium toggles and meters.</span></div>
+      <div class="bd">
+        <div class="advanced-grid">
+          <div class="field">
+            <label>Timeline Intensity <span class="mini" id="intensityLabel">3 — Very different life</span></label>
+            <div class="range-wrap">
+              <input type="range" id="timelineIntensity" min="1" max="5" step="1" value="3" />
+              <p class="subtext">How far this reality drifts from the current one.</p>
+            </div>
+          </div>
+          <div class="field">
+            <label>Portal Stability <span class="mini" id="stabilityLabel">stable</span></label>
+            <div class="range-wrap">
+              <input type="range" id="portalStability" min="1" max="5" step="1" value="1" />
+              <div class="meter"><span id="stabilityMeter"></span></div>
+              <p class="subtext">Stable to fully open. Higher values create stranger, richer distortions.</p>
+            </div>
+          </div>
+          <div class="field">
+            <label>Portal Glitch Mode <span class="mini">dream logic</span></label>
+            <div class="toggle-group" id="glitchToggleGroup">
+              <span class="toggle active" data-group="glitch" data-value="off">Portal Glitch Off</span>
+              <span class="toggle" data-group="glitch" data-value="on">Portal Glitch On</span>
+            </div>
+            <p class="subtext">Adds impossible architecture, symbolic distortion, reality tears, and elegant weirdness.</p>
+          </div>
+          <div class="field">
+            <label>Identity Split <span class="mini">before / after</span></label>
+            <div class="toggle-group" id="identitySplitGroup">
+              <span class="toggle active" data-group="split" data-value="off">Off</span>
+              <span class="toggle" data-group="split" data-value="on">Current Self vs Alternate Self</span>
+            </div>
+            <p class="subtext">Creates a current-self prompt, alternate-self prompt, and a transformation summary.</p>
+          </div>
+          <div class="field">
+            <label>Morality <span class="mini">coded energy</span></label>
+            <div class="chip-group" id="moralityGroup"></div>
+          </div>
+          <div class="field">
+            <label>Public Image <span class="mini">how the world reads you</span></label>
+            <div class="chip-group" id="publicImageGroup"></div>
+          </div>
+          <div class="field">
+            <label>Romance Energy <span class="mini">optional spice</span></label>
+            <div class="chip-group" id="romanceGroup"></div>
+          </div>
+          <div class="field">
+            <label>Legacy Level <span class="mini">how iconic the timeline gets</span></label>
+            <div class="chip-group" id="legacyGroup"></div>
+          </div>
+          <div class="field">
+            <label>Prompt Quality Controls <span class="mini">push the voice</span></label>
+            <div class="two-col">
+              <div class="range-wrap">
+                <label class="mini">Cinematic <span id="cinematicLabel">3</span></label>
+                <input type="range" id="cinematicLevel" min="1" max="5" step="1" value="3" />
+              </div>
+              <div class="range-wrap">
+                <label class="mini">Emotional <span id="emotionalLabel">3</span></label>
+                <input type="range" id="emotionalLevel" min="1" max="5" step="1" value="3" />
+              </div>
+              <div class="range-wrap">
+                <label class="mini">Luxurious <span id="luxuryLabel">4</span></label>
+                <input type="range" id="luxuryLevel" min="1" max="5" step="1" value="4" />
+              </div>
+              <div class="range-wrap">
+                <label class="mini">Surreal <span id="surrealLabel">3</span></label>
+                <input type="range" id="surrealLevel" min="1" max="5" step="1" value="3" />
+              </div>
+              <div class="range-wrap">
+                <label class="mini">Realistic <span id="realismLabel">4</span></label>
+                <input type="range" id="realismLevel" min="1" max="5" step="1" value="4" />
+              </div>
+              <div class="range-wrap">
+                <label class="mini">Dark ↔ Soft <span id="toneLabel">3</span></label>
+                <input type="range" id="toneLevel" min="1" max="5" step="1" value="3" />
+              </div>
+            </div>
+            <p class="subtext">Higher values push the language harder without bloating the form.</p>
+          </div>
+          <div class="field">
+            <label>Prompt Length Mode <span class="mini">how long the prompts run</span></label>
+            <div class="chip-group" id="promptLengthGroup"></div>
+          </div>
+          <div class="field">
+            <label>Platform Mode <span class="mini">shape the wording for where you paste it</span></label>
+            <div class="chip-group" id="platformModeGroup"></div>
+          </div>
+          <div class="field">
+            <label>Collector Mode <span class="mini">vault your alternate selves</span></label>
+            <div class="toggle-group" id="collectorModeGroup">
+              <span class="toggle active" data-group="collector" data-value="off">Collector Off</span>
+              <span class="toggle" data-group="collector" data-value="on">Collector On</span>
+            </div>
+            <p class="subtext">Adds an edition number, collector tag, and vault flavor to saved timelines.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel span-6">
+      <div class="hd"><h2>Timeline Metadata</h2><span class="muted">Names, reasons, and portal logic.</span></div>
+      <div class="bd two-col">
+        <div class="field">
+          <label>Timeline Name <span class="mini">generated</span></label>
+          <textarea id="timelineName" rows="4" placeholder="The Black Marble Timeline"></textarea>
+          <div class="ctrls"><button class="btn small gold" id="genNameBtn">Generate Name</button><button class="btn small" data-copy-target="timelineName">Copy</button></div>
+        </div>
+        <div class="field">
+          <label>Why This Timeline Exists <span class="mini">mystical reason</span></label>
+          <textarea id="timelineReason" rows="4" placeholder="This timeline opened the second you stopped settling."></textarea>
+          <div class="ctrls"><button class="btn small violet" id="genReasonBtn">Generate Reason</button><button class="btn small" data-copy-target="timelineReason">Copy</button></div>
+        </div>
+        <div class="field">
+          <label>What Changed <span class="mini">identity shift</span></label>
+          <textarea id="whatChanged" rows="4" placeholder="She stopped overexplaining and built access control."></textarea>
+          <div class="ctrls"><button class="btn small pink" id="genChangedBtn">Generate Shift</button><button class="btn small" data-copy-target="whatChanged">Copy</button></div>
+        </div>
+        <div class="field">
+          <label>Character Sheet Notes <span class="mini">freeform</span></label>
+          <textarea id="characterNotes" rows="4" placeholder="Anything extra you want baked into the reality..."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel span-12">
+      <div class="hd"><h2>Generated Outputs</h2><span class="muted">Each box has its own copy button.</span></div>
+      <div class="bd"><div class="output-grid" id="mainOutputs"></div></div>
+    </section>
+
+    <section class="panel span-12">
+      <div class="hd"><h2>Content Suite</h2><span class="muted">Social copy, hooks, monologues, and digital product ideas.</span></div>
+      <div class="bd"><div class="output-grid" id="contentOutputs"></div></div>
+    </section>
+
+    <section class="panel span-12">
+      <div class="hd"><h2>Sensory + Reputation Suite</h2><span class="muted">This is the part that makes the world feel lived in and talked about.</span></div>
+      <div class="bd"><div class="output-grid" id="sensoryOutputs"></div></div>
+    </section>
+
+    <section class="panel span-12">
+      <div class="hd"><h2>Scene Pack + Consequences</h2><span class="muted">Multiple story scenes, emotional cost, and identity shift comparisons.</span></div>
+      <div class="bd"><div class="output-grid" id="sceneOutputs"></div></div>
+    </section>
+
+    <section class="panel span-12">
+      <div class="hd"><h2>Trailer + Soundtrack Suite</h2><span class="muted">Voiceover, visual sequence, soundtrack vibe, and title.</span></div>
+      <div class="bd"><div class="output-grid" id="trailerOutputs"></div></div>
+    </section>
+
+    <section class="panel span-12">
+      <div class="hd"><h2>Portal Weirdness + Director Suite</h2><span class="muted">Glitches, props, fate endings, and cinematic direction.</span></div>
+      <div class="bd"><div class="output-grid" id="portalOutputs"></div></div>
+    </section>
+
+    <section class="panel span-12">
+      <div class="hd"><h2>Signature Timeline Suite</h2><span class="muted">Your most iconic version, built to feel premium and collectible.</span></div>
+      <div class="bd"><div class="output-grid" id="signatureOutputs"></div></div>
+    </section>
+
+    <section class="panel span-12">
+      <div class="hd"><h2>Past Realities</h2><span class="muted">Saved locally in browser storage.</span></div>
+      <div class="bd">
+        <details open>
+          <summary class="btn small" style="display:inline-flex;">Open / Close Saved Timelines</summary>
+          <div class="history-list" id="historyList" style="margin-top:14px;"></div>
+        </details>
+      </div>
+    </section>
+  </div>
+
+  <p class="footer-note">all rights reserved by glamorousgrammyglowup</p>
+</div>
+
+<div class="scroll-btns">
+  <button id="scrollTopBtn" title="Scroll to top">↑</button>
+  <button id="scrollBottomBtn" title="Scroll to bottom">↓</button>
+</div>
+
+<script>
+(() => {
+  const CATEGORY_DEFS = [
+    { key:'identity', group:'core', title:'Timeline Identity', hint:'Who are you in this timeline?', custom:'Write your own timeline identity', options:['none','art thief','celebrity divorce attorney','casino queen','couture villainess','crystal healer mogul','diamond dealer','elite matchmaker','fashion house founder','glamorous outlaw','healing priestess','high-society recluse','jazz club owner','luxury concierge','luxury psychic','media mogul','midnight radio host','museum curator with secrets','noir detective','occult librarian','perfume empire owner','private investigator','rare book dealer','royal advisor','secret heiress','secret society hostess','shadow diplomat','socialite strategist','soft-spoken villain','spiritual CEO','theater impresario','underground club owner','velvet-lounge singer','villa empress','wellness empire founder','whisper network founder','wine estate matriarch','zodiac archivist','private security boss','couture archivist'] },
+    { key:'worldType', group:'core', title:'World Type', hint:'What world does this life exist in?', custom:'Describe your timeline world', options:['none','all-white villa society','antique opulence world','celestial royal court','crystal desert future','decadent underworld cabaret','desert palace society','dreamlit coastal kingdom','eternal twilight metropolis','floating island kingdom','futuristic luxury metropolis','golden-age jazz universe','gothic velvet empire','haunted luxury mansion world','hidden mountain sanctuary','imperial moon colony','lavish underwater city','luxury dystopia','magical fashion capital','midnight Paris world','mirrored casino skyline','neon noir city','oceanfront billionaire haven','old Hollywood glamour world','orchid palace dimension','private jet society','rain-soaked noir city','retro-futurist casino world','rooftop empire world','royal garden utopia','sacred velvet dreamscape','secret island monarchy','solar punk luxury district','tropical elite hideaway','velvet underground art world','victorian sci-fi capital','whispering marble kingdom','white-gold spiritual retreat','wild desert goddess realm','zodiac palace network'] },
+    { key:'coreEnergy', group:'core', title:'Core Energy', hint:'What energy do you carry here?', custom:'Describe your energy', options:['none','alluring but lethal','ambitious and restless','angelic but unreadable','aura-heavy','chaotic rich','cold and immaculate','dangerous','deeply desired','defiant','divine','dramatic','elegant','emotionally unavailable','glamorous and petty','grace under pressure','healing','heartbroken but elevated','hypnotic','iconic','intoxicating','magnetic','mysterious','playfully untouchable','poised and ruthless','quietly legendary','radiant but feared','rebellious','regal','seductive','sharp and controlled','soft but powerful','spiritually protected','strategically distant','sweet but dangerous','tender with teeth','untouchable','unbothered','velvet menace','wildly self-possessed'] },
+    { key:'powerSource', group:'core', title:'Power Source', hint:'What gives you power in this timeline?', custom:'What makes you powerful here?', options:['none','ancestral wisdom','beauty and silence','being underestimated','calm under pressure','charm and manipulation','community loyalty','cultural influence','deep discipline','divine protection','emotional intelligence','forbidden knowledge','generational wealth','grace under fire','hidden influence','impeccable taste','inner peace','intuition','iron self-control','magnetic restraint','mystery','negotiation skills','old-money legacy','pain turned into purpose','people underestimate you','private connections','quiet confidence','relentless ambition','sacred timing','social intelligence','spiritual gifts','strategic coldness','survival instinct','the secrets people trust you with','unshakable boundaries','visionary instinct','walking away easily','what you survived','your reputation','your vision','your voice'] },
+    { key:'lifestyle', group:'core', title:'Lifestyle Level', hint:'How do you live?', custom:'Describe your lifestyle', options:['none','after-hours gallery dinners','all-white villa stillness','antique opulence','art galleries and whispered deals','backstage and backroom power','black-card anonymity','candlelit penthouse life','champagne and strategy','chauffeured city nights','coastal estate serenity','curated old-money rituals','designer chaos','discreet billionaire leisure','floating-residence stillness','gated mansion privacy','grand hotel suite living','hidden luxury in plain sight','high-security soft life','jewelry-vault glamour','late-night boardroom elegance','luxury spa sanctuary living','luxury train travel','mansion with secrets','members-only nightlife','minimalist wealth stillness','night-drive city glamour','oceanfront goddess life','old money estate living','palace-corridor elegance','penthouse after-dark living','private chef soft life','private island stillness','private jets and silk robes','red-carpet social orbit','rooftop empire energy','sacred feminine retreat life','silk-robe morning rituals','velvet and gold nightlife','whispered-deal luxury lunches'] },
+    { key:'signatureLook', group:'core', title:'Signature Look', hint:'What do you wear in this timeline?', custom:'Describe your signature look', options:['none','architectural eveningwear','beaded caftan glamour','black silk and diamonds','blazer dress and thigh-high boots','bossed-up street luxury','brocade power tailoring','chainmail shimmer couture','champagne satin draping','charcoal cashmere luxury','chiffon goddess layers','corseted velvet eveningwear','couture capes','crystal corsets','dark feminine lace','diamond-dusted bodysuit glamour','divine white and gold','dramatic trench and stilettos','embroidered regal robes','feather-trimmed evening glamour','glossy latex luxury','goddess draping and gold cuffs','high-fashion editorial armor','ivory silk minimalism','jewel-toned opera glamour','leather and jewels','liquid-metal red carpet look','mirror-shine metallics','monochrome billionaire chic','oversized fur and heels','pearl-drenched elegance','rich-widow glamour','sequined midnight glamour','sharp power suits','soft angelic neutrals','structured couture separates','velvet robe royalty','vintage Hollywood gowns','white-on-white resort luxury','woven gold ceremonial glamour'] },
+    { key:'ethnicity', group:'core', title:'Ethnicity / Heritage', hint:'Who is this woman visually and culturally?', custom:'Describe ethnicity or heritage', options:['none','African American / Black','Afro-Latina','Arab / Middle Eastern','Asian','Black British','Caribbean Black','East African','East Asian','Indigenous / Native','Latina','Mixed heritage','North African','Pacific Islander','South Asian','Southeast Asian','White','West African'] },
+    { key:'skinTone', group:'core', title:'Skin Tone', hint:'What skin tone should the image preserve?', custom:'Describe skin tone', options:['none','deep ebony','deep rich brown','espresso brown','golden brown','golden deep tan','golden beige','honey brown','light beige','light brown','medium brown','olive','porcelain','rich bronze','soft tan','warm caramel'] },
+    { key:'bodyType', group:'core', title:'Body Type', hint:'What body type does this version of her have?', custom:'Describe body type', options:['none','athletic','curvy','full-figured','mid-size','petite','plus-size','slim-thick','soft curvy','statuesque','straight-size','thick'] },
+    { key:'hairTexture', group:'core', title:'Hair Texture', hint:'What hair texture should be visible?', custom:'Describe hair texture', options:['none','1A straight','1C straight','2B wavy','2C wavy','3A curly','3B curly','3C curly','4A coily','4B coily','4C coily','blown-out textured','locs','micro braids','silk press textured','twists','wavy'] },
+    { key:'hairStyle', group:'core', title:'Hair Style', hint:'How is her hair styled?', custom:'Describe hair style', options:['none','afro','asymmetrical bob','bantu knots','barrel curls','bob','braided crown','bubble ponytail','box braids','bun','butterfly locs','cornrows','curtain bangs','double buns','finger waves','french twist','half-up half-down','headwrap style','high ponytail','high puff','hollywood waves','knotless braids','layered blowout','loc bob','long curls','loose waves','messy top knot','micro braids','pixie cut','ponytail with tendrils','roller set','scarf-wrapped updo','shoulder-length layers','side braid','silk press','sleek straight','space buns','tapered cut','twist-out','updo'] },
+    { key:'beauty', group:'world', title:'Beauty Details', hint:'How do you appear up close?', custom:'Add beauty details', options:['none','airbrushed red-carpet glam','amber-lit bronzed glow','barely-there glossy glam','bejeweled eye accents','bold editorial glam','clean luxury skin finish','crystal-highlighted glamour','dark feminine beauty','dewy soft-focus skin','diamond-dusted body glow','effortless rich-girl makeup','ethereal candlelit glow','feathered lashes and gloss','fresh-faced soft glam','glass-skin elegance','glossy nude lips','gold-flecked highlight','glowing goddess finish','high-fashion skin sheen','icy perfection look','illuminated collarbone glow','jewel-toned smoky eyes','kissed-by-moonlight skin','luxury no-lash glam','mature polished glamour','mysterious barely-there glam','no-makeup luxury face','old-money polished beauty','pearl-sheen skin finish','plush velvet-matte glam','radiant under-eye glow','red carpet goddess glam','satin-finish complexion','sharp cat-eye glamour','soft radiant skin','statement lips and soft skin','subtle sculpted cheekbones','sunkissed expensive glow','smoky eyes and diamonds','vintage Hollywood beauty'] },
+    { key:'homeBase', group:'world', title:'Home Base', hint:'Where do you live or rule from?', custom:'Describe your home base', options:['none','black marble penthouse','candlelit Paris apartment','cliffside glass villa','desert palace suite','floating luxury residence','gilded townhouse','gothic manor','grand lakefront estate','hidden island estate','hillside modern villa','ivy-covered chateau','lavender stone villa','luxury train carriage','marble courtyard residence','mirrored high-rise tower','moonlit rooftop loft','oceanview cliff mansion','old-money mansion','ornate palace apartment','private castle wing','private desert compound','private vineyard estate','rain-lit city penthouse','rose garden manor','secluded forest estate','secluded mountain lodge','secluded seaside villa','skyline duplex suite','snowy alpine chalet','sun-drenched coastal villa','velvet hotel suite','victorian townhouse','waterfront glass house','white marble retreat','winding countryside estate','yacht residence','zen courtyard villa','royal tower suite','art deco penthouse'] },
+    { key:'visualStyle', group:'world', title:'Visual Style', hint:'How should this timeline look?', custom:'Describe the visual style', options:['none','ad-quality realism','antique romantic cinema','atmospheric noir editorial','billboard-ready luxury realism','bold magazine-cover energy','cinematic dream haze','clean luxury portrait realism','dark luxury fantasy','diamond-gloss editorial','dreamlike luxury realism','editorial glamour realism','elevated streaming-series aesthetic','ethereal prestige cinema','fashion campaign style','fine-art luxury portraiture','glossy editorial','glowing divine realism','golden-hour filmic softness','grand cinematic spectacle','high-fashion fantasy realism','hyper-detailed cinematic realism','iconic red-carpet glamour','immersive worldbuilding realism','intimate character-drama realism','light-leak film still','luxury perfume-ad aesthetic','moody noir glamour','opulent film still','polished commercial realism','prestige TV drama aesthetic','rich cinematic softness','soft-focus luxury dreamscape','stylized realism with drama','surreal haute couture','textured vintage glamour','ultra-realistic cinematic','velvet-shadow editorial','visionary concept-art realism','widescreen dramatic elegance'] },
+    { key:'colorStory', group:'world', title:'Color Story', hint:'What colors define this world?', custom:'Add custom colors', options:['none', 'amber and onyx', 'amethyst and black velvet', 'antique gold and oxblood', 'aubergine and champagne', 'black and gold', 'black and silver chrome', 'blush and champagne', 'bronze and espresso', 'burgundy and candlelight gold', 'caramel and cream', 'cerulean and platinum', 'charcoal and rose gold', 'chocolate brown and gold', 'copper and midnight blue', 'crimson and black lacquer', 'crystal white and silver', 'deep emerald and gold', 'dusty rose and ivory', 'graphite and pearl', 'ice blue and silver', 'ivory and honey gold', 'jade and black satin', 'lilac smoke and silver', 'mahogany and bronze', 'merlot and gold', 'midnight plum and gold', 'mocha and champagne', 'moonstone and charcoal', 'navy and antique gold', 'noir black and ruby', 'obsidian and champagne', 'olive and brass', 'pearl white and soft beige', 'rosewood and gold', 'royal sapphire and silver', 'smoke gray and gold', 'taupe and brushed gold', 'teal and bronze', 'warm bronze and cream'] },
+    { key:'atmosphere', group:'world', title:'Atmosphere FX', hint:'What atmosphere surrounds the scene?', custom:'Add atmosphere effects', options:['none','amber lantern glow','aurora haze','backlit smoke ribbons','black candle soot','blue hour mist','candle smoke','ceiling prism light','champagne sparkle haze','city haze','cloud-shadow drift','cold moon fog','crystal dust shimmer','desert heat haze','dim hallway glow','drifting ash','electric storm flicker','floating gold dust','fog drifting across marble floors','gilded sunlight beams','glowing rain','golden sunrise haze','heavy velvet darkness','incense smoke trails','light leaks','liquid mirror glow','low fireplace embers','mirror reflections','moonlight shimmer','neon mist','ocean salt breeze haze','opal glow','rain on glass','rose-tinted haze','silver fog','soft sparkles','storm clouds in the distance','twilight smoke','velvet shadows','wet pavement glow'] },
+    { key:'symbolism', group:'world', title:'Symbolic Element', hint:'What symbol follows you through this timeline?', custom:'Add symbolism', options:['none','antique keys','black gloves','black roses','broken clocks','candles','celestial maps','chess pieces','cigarette holders','crystal keys','diamond hairpins','doves','embroidered hand fans','falling feathers','gold mirrors','golden lockets','ivory masks','lace gloves','locked letters','marble busts','mirror shards','moon phases','obsidian rosaries','old photographs','ornate daggers','pearl combs','perfume bottles','pressed flowers','raven feathers','ravens','rings','sealed invitations','silver bells','tarot cards','tiny crowns','velvet ribbons','vintage books','wax seals','white orchids','withered roses'] },
+    { key:'dailyLife', group:'story', title:'Daily Life Scene', hint:'What does a random day look like?', custom:'Describe a day in this life', options:['none','arriving at a private dinner nobody talks about','boarding a private jet in silence','brunching on a hidden terrace while ignoring two invitations and one apology','buying rare perfume in a hidden boutique','choosing jewels for a gala while the city waits on a decision','closing a private deal over dessert and candlelight','dancing alone in a penthouse after midnight','descending a velvet staircase just late enough to shift the mood','drifting through a museum before opening hours with a private key','entering an art gallery after hours','getting dressed for a gala without smiling','gliding through a rooftop greenhouse in silk before sunrise','hosting a silent strategy breakfast with people too powerful to name','lighting candles in a black marble bathroom','lingering in a chauffeured car while the city blurs into gold','making quiet empire moves from a rooftop','ordering flowers with the same precision used to move money','overseeing a private fitting surrounded by mirrors and assistants','passing through a members-only hotel corridor with unreadable calm','planning a quiet comeback over espresso and old records','pulling up to a private auction with no intention of losing','reading letters no one else was meant to see','reading secrets over tea','reviewing contracts in silk pajamas','shopping for art like the walls already belong to you','signing something expensive with a face that gives away nothing','sipping champagne on a balcony while the skyline makes promises','slipping into a private lounge through a back entrance known only to a few','spending an afternoon in a velvet library pretending not to be missed','stepping onto a marina deck in sunglasses before the crew can greet you','taking a private call on a marble balcony at sunrise','tasting a signature cocktail while listening for the one lie in the room','trying on couture in silence while someone else panics nearby','unlocking a private suite while pretending the night means nothing','walking a candlelit hallway before a meeting that changes everything','walking through a members-only lounge in heels','watching rain hit the city from a penthouse window with a secret in hand','wearing white in a room full of people who expected black','writing in a leather journal beside an untouched breakfast tray'] },
+    { key:'timelineTwist', group:'story', title:'Timeline Twist', hint:'What makes this version of you unforgettable?', custom:'Describe the timeline twist', options:['none','always arrive before everything changes','beauty hides ruthless intelligence','built the empire after betrayal','came back softer but far less reachable','collects secrets the way others collect jewelry','disappeared once and came back richer','every room still remembers the first time she left it speechless','everyone knows your name but not your past','healing but still dangerous','inherited power no one expected','keeps one truth hidden behind every luxury','left your old life without warning','looks effortless because no one saw the reinvention','made reinvention look like destiny','never explain yourself','never returned to the version of her that begged','people confuse her calm for innocence until it is too late','protect people while pretending not to care','rebuilt her life so beautifully it became suspicious','refuses to be fully known, even by those closest to her','rumored to be immortal','secretly feared by powerful people','she can read a room before anyone says a word','she left survival mode dressed like luxury','she made boundaries look glamorous','she remembers exactly who doubted her','she treats access like a privilege, not a right','she turned heartbreak into architecture','some people swear she existed in another century first','speak very little but run everything','the life looks polished, but every detail was chosen with intent','the villain in someone else’s story','they only understand her after the damage is done','walked away from love and chose power','what people call mystery is really discipline','when she changed, even time seemed to adjust around her','who she became was the answer to being underestimated','wore grace so well no one saw the blade underneath','your softness survived, but it stopped asking for permission'] },
+    { key:'storyTension', group:'story', title:'Story Tension', hint:'What tension follows you?', custom:'Add story tension', options:['none','access always comes with a price','being adored started to feel like surveillance','every promise in this life came with hidden terms','everyone wants access but no one gets closeness','everywhere she goes, the past changes outfits and waits','her empire is beautiful but the truth isn’t','her freedom depends on staying unreadable','her peace looks expensive because it was','history keeps testing the boundaries she built','intimacy feels risky when power is always watching','love keeps arriving disguised as a distraction','luxury softened the edges but never erased the danger','no one can tell if she is healing or preparing','one wrong trust could bring the old world back','peace was built, but the past keeps knocking','power came with loneliness','privacy became the one thing money couldn’t fully buy','rumors move faster than the truth in this world','someone close keeps wanting the version of her that no longer exists','someone is always trying to decode her silence','someone is watching from the old timeline','success made her harder to reach','the life is glamorous but not fully safe','the more she rises, the more carefully she has to love','the room respects her, but never relaxes around her','they love her image but fear her mind','too many people confuse softness for permission','too much beauty attracts obsession','too much power attracts dangerous attention','what protects her also keeps her isolated','what she escaped is looking for her','when she finally became the prize, connection got complicated','winning changed her, and not everyone survived the upgrade','you can build a beautiful life and still hear old doors opening','your name opens rooms, but it also starts wars','your silence makes people invent dangerous stories','your softness has to live beside strategy now','your success made old relationships feel unfinished','your world shines, but its shadows still remember you'] },
+    { key:'introScene', group:'story', title:'Cinematic Intro', hint:'How does the movie introduce you?', custom:'Describe your intro scene', options:['none','appearing at the far end of a candlelit ballroom','arriving by helicopter above the city at dusk','backlit by a storm through floor-to-ceiling windows','candles flicker as you appear','caught in a slow zoom through cigarette smoke and jazz light','close-up glamour reveal','descending a grand staircase while the room goes silent','dramatic mirror reflection shot','emerging from a private elevator into a rooftop party','entering through velvet curtains into a hidden room','first seen through someone else’s fearful eyes','framed in a doorway with wind catching your clothes','gliding through a museum after hours under security lights','heels echoing through a marble hallway','introduced by flashing cameras outside a private venue','leaning against a balcony as the skyline glows behind you','lit only by neon from rain-streaked windows','opening shot from behind as you face a kingdom of lights','private jet stair entrance','rain-soaked neon arrival','reflected in black marble before the camera finds your face','revealed by a turn toward the camera at the end of a hallway','rooftop silhouette at sunset','seen first as a silhouette behind frosted glass doors','slow-motion walk through double doors','stepping out of a black car in silence','stepping onto a terrace as strings swell in the background','the camera finds you through the crowd at a gala','the doors part and all sound seems to drop away','turning in a gilded chair as someone says your name','walking down a train platform in midnight glamour','walking into a room where everyone stops talking','watching the city from a penthouse window before facing the camera','wind lifting your coat on a moonlit rooftop','your hand closing around a crystal glass before the reveal','your reflection appears first in a gold mirror','your silhouette crossing a private runway at night','your voice heard first over city lights before you appear','zooming in as you step from shadow into gold light'] },
+    { key:'contentPurpose', group:'story', title:'Content Purpose', hint:'What are you creating this for?', custom:'What do you want to use it for?', options:['none','affirmation identity shift content','AI image prompt','book character inspiration','character branding','digital product inspiration','moodboard creation','social media content','story concept','video trailer prompt','YouTube intro concept'] }
+  ];
+
+  const OUTPUT_DEFS = {
+    main: [
+      ['heroPrompt','Main Character Prompt'],
+      ['worldPrompt','World / Lifestyle Prompt'],
+      ['dailyPrompt','Daily Life Prompt'],
+      ['introPrompt','Cinematic Intro Prompt'],
+      ['tensionPrompt','Story Tension Prompt'],
+      ['identityBio','Identity Summary / Bio'],
+      ['socialCaption','Social Caption'],
+      ['hookLine','Hook Line'],
+      ['trailerVoiceover','Trailer Voiceover'],
+      ['soundtrackVibe','Soundtrack Vibe'],
+      ['brandTagline','Brand Tagline'],
+      ['transformationSummary','Transformation Summary']
+    ],
+    content: [
+      ['tiktokCaption','TikTok Caption'],
+      ['instagramCaption','Instagram Caption'],
+      ['youtubeHook','YouTube Short Hook'],
+      ['pinterestTitle','Pinterest Title'],
+      ['moodboardKeywords','Moodboard Keywords'],
+      ['affirmation','Affirmation'],
+      ['miniMonologue','Mini Monologue'],
+      ['characterQuote','Character Quote'],
+      ['emailSubject','Email Subject Line'],
+      ['productTitle','Digital Product Title']
+    ],
+    sensory: [
+      ['timelineGave','What This Life Gave You'],
+      ['timelineCost','What This Life Cost You'],
+      ['whatBecame','What You Had To Become'],
+      ['neverAcceptAgain','What You’ll Never Accept Again'],
+      ['signatureScent','Signature Scent'],
+      ['backgroundSound','Background Sound'],
+      ['favoriteDrink','Favorite Drink'],
+      ['roomTexture','Room Texture'],
+      ['lightingDirection','Lighting Style'],
+      ['weatherPattern','Weather Pattern'],
+      ['cityNoise','City Noise or Silence'],
+      ['materialsSurfaces','Materials + Surfaces'],
+      ['strangersSay','What Strangers Say'],
+      ['enemiesSay','What Enemies Say'],
+      ['loversSay','What Lovers Say'],
+      ['internetSays','What The Internet Says'],
+      ['rumorFollows','The Rumor That Follows You']
+    ],
+    scene: [
+      ['currentSelfMindset','How Current You Thinks'],
+      ['timelineSelfMindset','How Timeline You Thinks'],
+      ['currentSelfTolerates','What Current You Tolerates'],
+      ['timelineSelfRefuses','What Timeline You Refuses'],
+      ['sceneMorningRoutine','Morning Routine Scene'],
+      ['scenePowerMove','Power Move Scene'],
+      ['scenePublicAppearance','Public Appearance Scene'],
+      ['scenePrivateVulnerability','Private Vulnerability Scene'],
+      ['sceneRomanticTension','Romantic Tension Scene'],
+      ['sceneEnemyEncounter','Enemy Encounter Scene'],
+      ['sceneRevenge','Revenge Scene'],
+      ['sceneFinalShot','Final Movie Scene'],
+      ['sceneTitlePack','Portal Snapshot Gallery']
+    ],
+    trailer: [
+      ['trailerConcept','8-Second Trailer Concept'],
+      ['visualSequence','Visual Sequence'],
+      ['openingShot','Opening Shot'],
+      ['closingLine','Closing Line'],
+      ['soundtrackGenre','Genre Blend'],
+      ['soundtrackMood','Soundtrack Mood'],
+      ['soundtrackTempo','Tempo + Instrumentation'],
+      ['soundtrackVoice','Vocal Tone'],
+      ['soundtrackTitle','Soundtrack Title'],
+      ['timelineCard','Character Sheet Preview']
+    ],
+    portal: [
+      ['wealthSignature','Wealth Signature Details'],
+      ['cameraDirector','Cinematic Camera Director'],
+      ['portalInstability','Portal Instability Events'],
+      ['whatSheKnows','What She Knows'],
+      ['symbolicProp','Symbolic Prop'],
+      ['eraBlend','Era Blend'],
+      ['fateEnding','Timeline Fate Ending']
+    ],
+    signature: [
+      ['signatureTimeline','Generate My Signature Timeline'],
+      ['signatureIdentity','Most Iconic Version'],
+      ['signatureQuote','Strongest Quote'],
+      ['signatureScene','Best Scene'],
+      ['signatureMessage','This Is Your Dimension Now'],
+      ['qualityProfile','Prompt Quality Profile'],
+      ['platformGuide','Platform Formatting Guide'],
+      ['editionCard','Collector Edition Card']
+    ]
+  };
+
+  const optionGroups = {
+    morality: ['saint','complicated','dangerous','villain-coded','antihero','cold but fair','morally gray','protective but ruthless','redemptive','vengeful','merciful','calculating','honorable outlaw','chaotic good','chaotic neutral','lawful good','lawful neutral','lawful evil','neutral good','true neutral','neutral evil','soft-hearted strategist','elegant menace','guardian with claws','healer with boundaries','justice-driven','survival-first','power with purpose','seductive manipulator','reluctant villain','misunderstood protector','saint with shadows','beautifully dangerous','grace under fire','quietly ruthless','ethically flexible','loyal to few','forgiving but not naive','venom in velvet','holy but untouchable'],
+    publicImage: ['adored','admired from a distance','beloved but underestimated','closely watched','copied constantly','deeply desired','dismissed until proven dangerous','envied','fascinating to strangers','feared','glamorized by the public','gossiped about endlessly','hard to read','hauntingly unforgettable','iconic in private circles','intimidating without trying','misread on purpose','misunderstood','object of obsession','often imitated never matched','polarizing','powerfully respected','protected by loyal insiders','quietly legendary','rumored about in elite rooms','secretly resented','seen as expensive trouble','seen as unreachable','spoken of in whispers','studied like a mystery','the standard others chase','too polished to question','treated like a myth','unapologetically envied','underestimated at first glance','viewed as a status symbol','watched with suspicion','whispered about','worshipped','written about like a legend'],
+    romance: ['none','adored from afar','allergic to almosts','always leaves first','avoids attachment','cautiously open','chooses peace over passion','collects admirers, not promises','dangerously pursued','deeply loyal once committed','emotionally guarded','falls hard but hides it','flirts then disappears','fresh off heartbreak','hard to impress','heartbreak survivor','hiding a soft spot','in love with the wrong person','keeping love casual','learning to trust again','longing but unspoken','magnetic but unavailable','never chooses wrong twice','not looking, still desired','obsessively desired','open but selective','protective of her heart','quietly devoted','romance in exile','secretly in love','slow-burn connection only','soft for one person','still healing','suspicious of happy endings','tempted but resisting','too busy building','unavailable','underestimated in love','waiting for an equal','wanted by the impossible'],
+    legacy: ['quiet luxury','neighborhood legend','city icon','global fascination','timeless myth','cult favorite','industry name','regional icon','national headline','international obsession','household name','museum-worthy legend','internet myth','tabloid fixation','whisper-network icon','private-jet famous','boardroom legend','red-carpet fixture','cover-story regular','award-season staple','fashion week mainstay','society-page staple','legacy family name','dynasty in motion','name that opens doors','blueprint status','trend-setting force','gold-standard presence','once-in-a-generation aura','unreachable icon','quietly unforgettable','elite-circle known','old-money folklore','modern folklore','archive-worthy life','forever referenced','soft-power institution','myth in real time','cultural touchstone','immortalized presence'],
+    promptLength: ['short','medium','detailed','ultra-detailed'],
+    platformMode: ['general AI prompt','ChatGPT','Gemini','Midjourney-style','Leonardo-style']
+  };
+
+  const presetMap = {
+    'Velvet Empire Heiress': { identity:'secret heiress', worldType:'gothic velvet empire', coreEnergy:'untouchable', powerSource:'old-money legacy', lifestyle:'candlelit penthouse life', signatureLook:'black silk and diamonds', beauty:'mysterious barely-there glam', homeBase:'black marble penthouse', visualStyle:'dark luxury fantasy', colorStory:'black and gold', atmosphere:'floating gold dust', symbolism:'gold mirrors', dailyLife:'reviewing contracts in silk pajamas', timelineTwist:'everyone knows your name but not your past', storyTension:'everyone wants access but no one gets closeness', introScene:'slow-motion walk through double doors', contentPurpose:'character branding', morality:'complicated', publicImage:'envied', romance:'unavailable', legacy:'city icon', timelineIntensity:3, portalStability:2, glitch:'off', split:'off' , ethnicity:'African American / Black', skinTone:'deep rich brown', bodyType:'plus-size', hairTexture:'4C coily', hairStyle:'twist-out' },
+
+    'Midnight Paris Psychic': { identity:'luxury psychic', worldType:'midnight Paris world', coreEnergy:'mysterious', powerSource:'spiritual gifts', lifestyle:'hidden luxury in plain sight', signatureLook:'velvet robe royalty', beauty:'glowing goddess finish', homeBase:'candlelit Paris apartment', visualStyle:'opulent film still', colorStory:'midnight plum and gold', atmosphere:'candle smoke', symbolism:'moon phases', dailyLife:'reading secrets over tea', timelineTwist:'protect people while pretending not to care', storyTension:'peace was built, but the past keeps knocking', introScene:'candles flicker as you appear', contentPurpose:'AI image prompt', morality:'saint', publicImage:'whispered about', romance:'secretly in love', legacy:'neighborhood legend', timelineIntensity:3, portalStability:3, glitch:'on', split:'off' , ethnicity:'Latina', skinTone:'warm caramel', bodyType:'curvy', hairTexture:'3B curly', hairStyle:'long curls' },
+
+    'Diamond District Queenpin': { identity:'diamond dealer', worldType:'neon noir city', coreEnergy:'dangerous', powerSource:'private connections', lifestyle:'backstage and backroom power', signatureLook:'sharp power suits', beauty:'icy perfection look', homeBase:'mirrored high-rise tower', visualStyle:'moody noir glamour', colorStory:'royal sapphire and silver', atmosphere:'city haze', symbolism:'rings', dailyLife:'arriving at a private dinner nobody talks about', timelineTwist:'secretly feared by powerful people', storyTension:'too much power attracts dangerous attention', introScene:'stepping out of a black car in silence', contentPurpose:'story concept', morality:'dangerous', publicImage:'feared', romance:'dangerously pursued', legacy:'global fascination', timelineIntensity:4, portalStability:3, glitch:'off', split:'off' , ethnicity:'South Asian', skinTone:'golden beige', bodyType:'mid-size', hairTexture:'2C wavy', hairStyle:'loose waves' },
+
+    'Soft Life Villa Goddess': { identity:'wellness empire founder', worldType:'all-white villa society', coreEnergy:'soft but powerful', powerSource:'your vision', lifestyle:'all-white villa stillness', signatureLook:'divine white and gold', beauty:'soft radiant skin', homeBase:'white marble retreat', visualStyle:'glowing divine realism', colorStory:'pearl white and soft beige', atmosphere:'moonlight shimmer', symbolism:'doves', dailyLife:'taking a private call on a marble balcony at sunrise', timelineTwist:'healing but still dangerous', storyTension:'success made her harder to reach', introScene:'rooftop silhouette at sunset', contentPurpose:'affirmation identity shift content', morality:'saint', publicImage:'adored', romance:'adored from afar', legacy:'city icon', timelineIntensity:2, portalStability:1, glitch:'off', split:'on' , ethnicity:'White', skinTone:'porcelain', bodyType:'straight-size', hairTexture:'1C straight', hairStyle:'sleek straight' },
+
+    'Black Car Arrival Legend': { identity:'media mogul', worldType:'private jet society', coreEnergy:'iconic', powerSource:'your reputation', lifestyle:'champagne and strategy', signatureLook:'oversized fur and heels', beauty:'effortless rich-girl makeup', homeBase:'velvet hotel suite', visualStyle:'fashion campaign style', colorStory:'black and gold', atmosphere:'light leaks', symbolism:'locked letters', dailyLife:'boarding a private jet in silence', timelineTwist:'never explain yourself', storyTension:'they love her image but fear her mind', introScene:'stepping out of a black car in silence', contentPurpose:'social media content', morality:'complicated', publicImage:'worshipped', romance:'unavailable', legacy:'global fascination', timelineIntensity:3, portalStability:2, glitch:'off', split:'off' , ethnicity:'Arab / Middle Eastern', skinTone:'olive', bodyType:'full-figured', hairTexture:'3A curly', hairStyle:'braided crown' },
+
+    'Private Jet Divorce Attorney': { identity:'celebrity divorce attorney', worldType:'old Hollywood glamour world', coreEnergy:'elegant', powerSource:'emotional intelligence', lifestyle:'private jets and silk robes', signatureLook:'sharp power suits', beauty:'glossy nude lips', homeBase:'luxury train carriage', visualStyle:'prestige TV drama aesthetic', colorStory:'warm bronze and cream', atmosphere:'light leaks', symbolism:'chess pieces', dailyLife:'reviewing contracts in silk pajamas', timelineTwist:'walked away from love and chose power', storyTension:'power came with loneliness', introScene:'walking into a room where everyone stops talking', contentPurpose:'character branding', morality:'complicated', publicImage:'adored', romance:'heartbreak survivor', legacy:'city icon', timelineIntensity:4, portalStability:1, glitch:'off', split:'on' , ethnicity:'East Asian', skinTone:'light brown', bodyType:'athletic', hairTexture:'1A straight', hairStyle:'bob' },
+
+    'Dangerous Art Gallery Muse': { identity:'art thief', worldType:'velvet underground art world', coreEnergy:'deeply desired', powerSource:'beauty and silence', lifestyle:'art galleries and whispered deals', signatureLook:'couture capes', beauty:'bold editorial glam', homeBase:'moonlit rooftop loft', visualStyle:'surreal haute couture', colorStory:'dusty rose and ivory', atmosphere:'mirror reflections', symbolism:'vintage books', dailyLife:'entering an art gallery after hours', timelineTwist:'beauty hides ruthless intelligence', storyTension:'the life is glamorous but not fully safe', introScene:'dramatic mirror reflection shot', contentPurpose:'moodboard creation', morality:'dangerous', publicImage:'misunderstood', romance:'dangerously pursued', legacy:'timeless myth', timelineIntensity:4, portalStability:4, glitch:'on', split:'off' , ethnicity:'Caribbean Black', skinTone:'deep ebony', bodyType:'thick', hairTexture:'4A coily', hairStyle:'box braids' },
+
+    'Candlelit Penthouse Strategist': { identity:'spiritual CEO', worldType:'rooftop empire world', coreEnergy:'quietly legendary', powerSource:'your voice', lifestyle:'rooftop empire energy', signatureLook:'bossed-up street luxury', beauty:'no-makeup luxury face', homeBase:'black marble penthouse', visualStyle:'ultra-realistic cinematic', colorStory:'noir black and ruby', atmosphere:'candle smoke', symbolism:'candles', dailyLife:'making quiet empire moves from a rooftop', timelineTwist:'speak very little but run everything', storyTension:'everyone wants access but no one gets closeness', introScene:'close-up glamour reveal', contentPurpose:'digital product inspiration', morality:'complicated', publicImage:'envied', romance:'none', legacy:'global fascination', timelineIntensity:3, portalStability:2, glitch:'off', split:'off' , ethnicity:'Mixed heritage', skinTone:'medium brown', bodyType:'petite', hairTexture:'3C curly', hairStyle:'high ponytail' },
+
+    'Unbothered Island Mogul': { identity:'villa empress', worldType:'tropical elite hideaway', coreEnergy:'unbothered', powerSource:'generational wealth', lifestyle:'oceanfront goddess life', signatureLook:'soft angelic neutrals', beauty:'glass-skin elegance', homeBase:'hidden island estate', visualStyle:'dreamlike luxury realism', colorStory:'blush and champagne', atmosphere:'soft sparkles', symbolism:'perfume bottles', dailyLife:'buying rare perfume in a hidden boutique', timelineTwist:'left your old life without warning', storyTension:'what she escaped is looking for her', introScene:'slow-motion walk through double doors', contentPurpose:'social media content', morality:'complicated', publicImage:'adored', romance:'unavailable', legacy:'city icon', timelineIntensity:2, portalStability:2, glitch:'off', split:'on' , ethnicity:'Southeast Asian', skinTone:'soft tan', bodyType:'slim-thick', hairTexture:'2B wavy', hairStyle:'shoulder-length layers' },
+
+    'Haunted Mansion Beauty': { identity:'high-society recluse', worldType:'haunted luxury mansion world', coreEnergy:'mysterious', powerSource:'forbidden knowledge', lifestyle:'mansion with secrets', signatureLook:'rich-widow glamour', beauty:'dark feminine beauty', homeBase:'gothic manor', visualStyle:'dark luxury fantasy', colorStory:'noir black and ruby', atmosphere:'velvet shadows', symbolism:'ravens', dailyLife:'lighting candles in a black marble bathroom', timelineTwist:'rumored to be immortal', storyTension:'her empire is beautiful but the truth isn’t', introScene:'first seen through someone else’s fearful eyes', contentPurpose:'book character inspiration', morality:'villain-coded', publicImage:'whispered about', romance:'dangerously pursued', legacy:'timeless myth', timelineIntensity:5, portalStability:5, glitch:'on', split:'off' , ethnicity:'West African', skinTone:'espresso brown', bodyType:'soft curvy', hairTexture:'4B coily', hairStyle:'knotless braids' },
+
+    'Fashion House Widow': { identity:'fashion house founder', worldType:'old Hollywood glamour world', coreEnergy:'dramatic', powerSource:'impeccable taste', lifestyle:'designer chaos', signatureLook:'vintage Hollywood gowns', beauty:'vintage Hollywood beauty', homeBase:'old-money mansion', visualStyle:'fashion campaign style', colorStory:'deep emerald and gold', atmosphere:'soft sparkles', symbolism:'gold mirrors', dailyLife:'getting dressed for a gala without smiling', timelineTwist:'built the empire after betrayal', storyTension:'power came with loneliness', introScene:'heels echoing through a marble hallway', contentPurpose:'character branding', morality:'complicated', publicImage:'envied', romance:'heartbreak survivor', legacy:'global fascination', timelineIntensity:4, portalStability:2, glitch:'off', split:'on' , ethnicity:'Black British', skinTone:'golden brown', bodyType:'statuesque', hairTexture:'locs', hairStyle:'finger waves' },
+
+    'Underground Lounge Owner': { identity:'underground club owner', worldType:'retro-futurist casino world', coreEnergy:'magnetic', powerSource:'hidden influence', lifestyle:'velvet and gold nightlife', signatureLook:'leather and jewels', beauty:'smoky eyes and diamonds', homeBase:'velvet hotel suite', visualStyle:'glossy editorial', colorStory:'midnight plum and gold', atmosphere:'neon mist', symbolism:'chess pieces', dailyLife:'walking through a members-only lounge in heels', timelineTwist:'everyone knows your name but not your past', storyTension:'too much power attracts dangerous attention', introScene:'rain-soaked neon arrival', contentPurpose:'video trailer prompt', morality:'dangerous', publicImage:'whispered about', romance:'dangerously pursued', legacy:'city icon', timelineIntensity:4, portalStability:3, glitch:'on', split:'off' , ethnicity:'North African', skinTone:'rich bronze', bodyType:'curvy', hairTexture:'wavy', hairStyle:'updo' },
+
+    'Rainy Neon City Siren': { identity:'glamorous outlaw', worldType:'rain-soaked noir city', coreEnergy:'seductive', powerSource:'mystery', lifestyle:'night-drive city glamour', signatureLook:'mirror-shine metallics', beauty:'sharp cat-eye glamour', homeBase:'mirrored high-rise tower', visualStyle:'moody noir glamour', colorStory:'blue-black chrome', atmosphere:'glowing rain', symbolism:'rings', dailyLife:'dancing alone in a penthouse after midnight', timelineTwist:'the villain in someone else’s story', storyTension:'the life is glamorous but not fully safe', introScene:'rain-soaked neon arrival', contentPurpose:'AI image prompt', morality:'dangerous', publicImage:'envied', romance:'unavailable', legacy:'global fascination', timelineIntensity:5, portalStability:4, glitch:'on', split:'off' , ethnicity:'Indigenous / Native', skinTone:'honey brown', bodyType:'mid-size', hairTexture:'micro braids', hairStyle:'afro' },
+
+    'Celestial Court Royal': { identity:'royal advisor', worldType:'celestial royal court', coreEnergy:'divine', powerSource:'divine protection', lifestyle:'antique opulence', signatureLook:'goddess draping and gold cuffs', beauty:'glowing goddess finish', homeBase:'private castle wing', visualStyle:'glowing divine realism', colorStory:'crystal white and silver', atmosphere:'moonlight shimmer', symbolism:'falling feathers', dailyLife:'arriving at a private dinner nobody talks about', timelineTwist:'inherited power no one expected', storyTension:'peace was built, but the past keeps knocking', introScene:'candles flicker as you appear', contentPurpose:'book character inspiration', morality:'saint', publicImage:'worshipped', romance:'secretly in love', legacy:'timeless myth', timelineIntensity:4, portalStability:4, glitch:'on', split:'off' , ethnicity:'Pacific Islander', skinTone:'golden deep tan', bodyType:'plus-size', hairTexture:'twists', hairStyle:'bun' },
+
+    'Secret Society Hostess': { identity:'secret society hostess', worldType:'antique opulence world', coreEnergy:'untouchable', powerSource:'private connections', lifestyle:'champagne and strategy', signatureLook:'pearl-drenched elegance', beauty:'mysterious barely-there glam', homeBase:'old-money mansion', visualStyle:'opulent film still', colorStory:'warm bronze and cream', atmosphere:'candle smoke', symbolism:'locked letters', dailyLife:'arriving at a private dinner nobody talks about', timelineTwist:'secretly feared by powerful people', storyTension:'everyone wants access but no one gets closeness', introScene:'walking into a room where everyone stops talking', contentPurpose:'story concept', morality:'complicated', publicImage:'whispered about', romance:'dangerously pursued', legacy:'city icon', timelineIntensity:4, portalStability:2, glitch:'off', split:'off' , ethnicity:'Afro-Latina', skinTone:'warm caramel', bodyType:'athletic', hairTexture:'3B curly', hairStyle:'pixie cut' },
+
+    'Luxury Train Mystery Woman': { identity:'private investigator', worldType:'golden-age jazz universe', coreEnergy:'mysterious', powerSource:'intuition', lifestyle:'luxury train travel', signatureLook:'vintage Hollywood gowns', beauty:'glossy nude lips', homeBase:'luxury train carriage', visualStyle:'prestige TV drama aesthetic', colorStory:'warm bronze and cream', atmosphere:'storm clouds in the distance', symbolism:'vintage books', dailyLife:'reading secrets over tea', timelineTwist:'always arrive before everything changes', storyTension:'someone is watching from the old timeline', introScene:'slow-motion walk through double doors', contentPurpose:'video trailer prompt', morality:'complicated', publicImage:'misunderstood', romance:'secretly in love', legacy:'timeless myth', timelineIntensity:3, portalStability:3, glitch:'on', split:'off' , ethnicity:'East African', skinTone:'deep rich brown', bodyType:'full-figured', hairTexture:'4A coily', hairStyle:'long curls' },
+
+    'Perfume Empire Founder': { identity:'perfume empire owner', worldType:'magical fashion capital', coreEnergy:'elegant', powerSource:'impeccable taste', lifestyle:'hidden luxury in plain sight', signatureLook:'couture capes', beauty:'effortless rich-girl makeup', homeBase:'candlelit Paris apartment', visualStyle:'fashion campaign style', colorStory:'dusty rose and ivory', atmosphere:'soft sparkles', symbolism:'perfume bottles', dailyLife:'buying rare perfume in a hidden boutique', timelineTwist:'everyone knows your name but not your past', storyTension:'they love her image but fear her mind', introScene:'close-up glamour reveal', contentPurpose:'digital product inspiration', morality:'complicated', publicImage:'adored', romance:'adored from afar', legacy:'global fascination', timelineIntensity:3, portalStability:2, glitch:'off', split:'off' , ethnicity:'African American / Black', skinTone:'deep rich brown', bodyType:'plus-size', hairTexture:'4C coily', hairStyle:'twist-out' },
+
+    'Noir City Power Broker': { identity:'media mogul', worldType:'neon noir city', coreEnergy:'dangerous', powerSource:'hidden influence', lifestyle:'backstage and backroom power', signatureLook:'sharp power suits', beauty:'icy perfection look', homeBase:'mirrored high-rise tower', visualStyle:'moody noir glamour', colorStory:'blue-black chrome', atmosphere:'city haze', symbolism:'chess pieces', dailyLife:'making quiet empire moves from a rooftop', timelineTwist:'speak very little but run everything', storyTension:'too much power attracts dangerous attention', introScene:'walking into a room where everyone stops talking', contentPurpose:'story concept', morality:'villain-coded', publicImage:'feared', romance:'unavailable', legacy:'global fascination', timelineIntensity:4, portalStability:3, glitch:'off', split:'off' , ethnicity:'Latina', skinTone:'warm caramel', bodyType:'curvy', hairTexture:'3B curly', hairStyle:'long curls' },
+
+    'Rooftop Empire Visionary': { identity:'spiritual CEO', worldType:'rooftop empire world', coreEnergy:'quietly legendary', powerSource:'your vision', lifestyle:'rooftop empire energy', signatureLook:'bossed-up street luxury', beauty:'no-makeup luxury face', homeBase:'moonlit rooftop loft', visualStyle:'ultra-realistic cinematic', colorStory:'black and gold', atmosphere:'floating gold dust', symbolism:'gold mirrors', dailyLife:'taking a private call on a marble balcony at sunrise', timelineTwist:'left your old life without warning', storyTension:'success made her harder to reach', introScene:'rooftop silhouette at sunset', contentPurpose:'digital product inspiration', morality:'saint', publicImage:'adored', romance:'none', legacy:'city icon', timelineIntensity:3, portalStability:2, glitch:'off', split:'on' , ethnicity:'South Asian', skinTone:'golden beige', bodyType:'mid-size', hairTexture:'2C wavy', hairStyle:'loose waves' },
+
+    'Desert Palace Icon': { identity:'villa empress', worldType:'desert palace society', coreEnergy:'deeply desired', powerSource:'generational wealth', lifestyle:'antique opulence', signatureLook:'goddess draping and gold cuffs', beauty:'glowing goddess finish', homeBase:'desert palace suite', visualStyle:'rich cinematic softness', colorStory:'warm bronze and cream', atmosphere:'soft sparkles', symbolism:'candles', dailyLife:'arriving at a private dinner nobody talks about', timelineTwist:'beauty hides ruthless intelligence', storyTension:'everyone wants access but no one gets closeness', introScene:'slow-motion walk through double doors', contentPurpose:'AI image prompt', morality:'complicated', publicImage:'worshipped', romance:'adored from afar', legacy:'global fascination', timelineIntensity:4, portalStability:2, glitch:'off', split:'off' , ethnicity:'White', skinTone:'porcelain', bodyType:'straight-size', hairTexture:'1C straight', hairStyle:'sleek straight' },
+
+    'Golden Hour Villa Empress': { identity:'villa empress', worldType:'oceanfront billionaire haven', coreEnergy:'iconic', powerSource:'your reputation', lifestyle:'oceanfront goddess life', signatureLook:'soft angelic neutrals', beauty:'soft radiant skin', homeBase:'cliffside glass villa', visualStyle:'dreamlike luxury realism', colorStory:'blush and champagne', atmosphere:'light leaks', symbolism:'doves', dailyLife:'taking a private call on a marble balcony at sunrise', timelineTwist:'healing but still dangerous', storyTension:'success made her harder to reach', introScene:'rooftop silhouette at sunset', contentPurpose:'affirmation identity shift content', morality:'saint', publicImage:'adored', romance:'secretly in love', legacy:'city icon', timelineIntensity:2, portalStability:1, glitch:'off', split:'on' , ethnicity:'Arab / Middle Eastern', skinTone:'olive', bodyType:'full-figured', hairTexture:'3A curly', hairStyle:'braided crown' },
+
+    'Velvet Library Oracle': { identity:'luxury psychic', worldType:'gothic velvet empire', coreEnergy:'spiritually protected', powerSource:'forbidden knowledge', lifestyle:'hidden luxury in plain sight', signatureLook:'velvet robe royalty', beauty:'mysterious barely-there glam', homeBase:'gothic manor', visualStyle:'dark luxury fantasy', colorStory:'midnight plum and gold', atmosphere:'candle smoke', symbolism:'vintage books', dailyLife:'reading secrets over tea', timelineTwist:'rumored to be immortal', storyTension:'someone is watching from the old timeline', introScene:'candles flicker as you appear', contentPurpose:'book character inspiration', morality:'saint', publicImage:'whispered about', romance:'none', legacy:'timeless myth', timelineIntensity:5, portalStability:5, glitch:'on', split:'off' , ethnicity:'East Asian', skinTone:'light brown', bodyType:'athletic', hairTexture:'1A straight', hairStyle:'bob' },
+
+    'Ice Queen Media Mogul': { identity:'media mogul', worldType:'futuristic luxury metropolis', coreEnergy:'emotionally unavailable', powerSource:'your voice', lifestyle:'champagne and strategy', signatureLook:'mirror-shine metallics', beauty:'icy perfection look', homeBase:'mirrored high-rise tower', visualStyle:'glossy editorial', colorStory:'royal sapphire and silver', atmosphere:'light leaks', symbolism:'gold mirrors', dailyLife:'boarding a private jet in silence', timelineTwist:'never explain yourself', storyTension:'they love her image but fear her mind', introScene:'stepping out of a black car in silence', contentPurpose:'character branding', morality:'villain-coded', publicImage:'envied', romance:'unavailable', legacy:'global fascination', timelineIntensity:4, portalStability:2, glitch:'off', split:'off' , ethnicity:'Caribbean Black', skinTone:'deep ebony', bodyType:'thick', hairTexture:'4A coily', hairStyle:'box braids' },
+
+    'Spiritual Billionaire Muse': { identity:'crystal healer mogul', worldType:'floating island kingdom', coreEnergy:'divine', powerSource:'spiritual gifts', lifestyle:'sacred feminine retreat life', signatureLook:'divine white and gold', beauty:'glowing goddess finish', homeBase:'floating luxury residence', visualStyle:'glowing divine realism', colorStory:'crystal white and silver', atmosphere:'moonlight shimmer', symbolism:'crystal keys', dailyLife:'taking a private call on a marble balcony at sunrise', timelineTwist:'protect people while pretending not to care', storyTension:'peace was built, but the past keeps knocking', introScene:'candles flicker as you appear', contentPurpose:'affirmation identity shift content', morality:'saint', publicImage:'worshipped', romance:'adored from afar', legacy:'timeless myth', timelineIntensity:4, portalStability:4, glitch:'on', split:'on' , ethnicity:'Mixed heritage', skinTone:'medium brown', bodyType:'petite', hairTexture:'3C curly', hairStyle:'high ponytail' },
+
+    'Couture Villainess': { identity:'couture villainess', worldType:'magical fashion capital', coreEnergy:'glamorous and petty', powerSource:'charm and manipulation', lifestyle:'designer chaos', signatureLook:'high-fashion editorial armor', beauty:'bold editorial glam', homeBase:'mirrored high-rise tower', visualStyle:'surreal haute couture', colorStory:'noir black and ruby', atmosphere:'mirror reflections', symbolism:'black roses', dailyLife:'getting dressed for a gala without smiling', timelineTwist:'the villain in someone else’s story', storyTension:'they love her image but fear her mind', introScene:'walking into a room where everyone stops talking', contentPurpose:'social media content', morality:'villain-coded', publicImage:'envied', romance:'dangerously pursued', legacy:'timeless myth', timelineIntensity:5, portalStability:4, glitch:'on', split:'off' , ethnicity:'Southeast Asian', skinTone:'soft tan', bodyType:'slim-thick', hairTexture:'2B wavy', hairStyle:'shoulder-length layers' },
+
+    'Moonlit Casino Owner': { identity:'casino queen', worldType:'retro-futurist casino world', coreEnergy:'magnetic', powerSource:'private connections', lifestyle:'velvet and gold nightlife', signatureLook:'black silk and diamonds', beauty:'smoky eyes and diamonds', homeBase:'velvet hotel suite', visualStyle:'opulent film still', colorStory:'black and gold', atmosphere:'neon mist', symbolism:'rings', dailyLife:'walking through a members-only lounge in heels', timelineTwist:'secretly feared by powerful people', storyTension:'too much power attracts dangerous attention', introScene:'rain-soaked neon arrival', contentPurpose:'video trailer prompt', morality:'dangerous', publicImage:'whispered about', romance:'dangerously pursued', legacy:'city icon', timelineIntensity:4, portalStability:3, glitch:'on', split:'off' , ethnicity:'West African', skinTone:'espresso brown', bodyType:'soft curvy', hairTexture:'4B coily', hairStyle:'knotless braids' },
+
+    'Crystal Tower Recluse': { identity:'high-society recluse', worldType:'futuristic luxury metropolis', coreEnergy:'untouchable', powerSource:'people underestimate you', lifestyle:'hidden luxury in plain sight', signatureLook:'soft angelic neutrals', beauty:'glass-skin elegance', homeBase:'mirrored high-rise tower', visualStyle:'dreamlike luxury realism', colorStory:'crystal white and silver', atmosphere:'light leaks', symbolism:'crystal keys', dailyLife:'dancing alone in a penthouse after midnight', timelineTwist:'everyone knows your name but not your past', storyTension:'power came with loneliness', introScene:'dramatic mirror reflection shot', contentPurpose:'moodboard creation', morality:'complicated', publicImage:'misunderstood', romance:'none', legacy:'timeless myth', timelineIntensity:4, portalStability:3, glitch:'on', split:'on' , ethnicity:'Black British', skinTone:'golden brown', bodyType:'statuesque', hairTexture:'locs', hairStyle:'finger waves' },
+
+    'Midnight Jazz Club Diva': { identity:'velvet-lounge singer', worldType:'golden-age jazz universe', coreEnergy:'seductive', powerSource:'your voice', lifestyle:'velvet and gold nightlife', signatureLook:'pearl-drenched elegance', beauty:'vintage Hollywood beauty', homeBase:'velvet hotel suite', visualStyle:'rich cinematic softness', colorStory:'deep emerald and gold', atmosphere:'soft sparkles', symbolism:'candles', dailyLife:'walking through a members-only lounge in heels', timelineTwist:'built the empire after betrayal', storyTension:'everyone wants access but no one gets closeness', introScene:'close-up glamour reveal', contentPurpose:'YouTube intro concept', morality:'complicated', publicImage:'adored', romance:'secretly in love', legacy:'city icon', timelineIntensity:3, portalStability:2, glitch:'off', split:'off' , ethnicity:'North African', skinTone:'rich bronze', bodyType:'curvy', hairTexture:'wavy', hairStyle:'updo' },
+
+    'Art Thief in Silk': { identity:'art thief', worldType:'old Hollywood glamour world', coreEnergy:'dangerous', powerSource:'mystery', lifestyle:'art galleries and whispered deals', signatureLook:'black silk and diamonds', beauty:'sharp cat-eye glamour', homeBase:'candlelit Paris apartment', visualStyle:'opulent film still', colorStory:'noir black and ruby', atmosphere:'velvet shadows', symbolism:'locked letters', dailyLife:'entering an art gallery after hours', timelineTwist:'left your old life without warning', storyTension:'what she escaped is looking for her', introScene:'first seen through someone else’s fearful eyes', contentPurpose:'story concept', morality:'dangerous', publicImage:'whispered about', romance:'dangerously pursued', legacy:'timeless myth', timelineIntensity:5, portalStability:5, glitch:'on', split:'off' , ethnicity:'Indigenous / Native', skinTone:'honey brown', bodyType:'mid-size', hairTexture:'micro braids', hairStyle:'afro' }
+  };
+
+  const state = {
+    categories:{},
+    locks:{},
+    outputs:{},
+    morality:'complicated',
+    publicImage:'envied',
+    romance:'none',
+    legacy:'city icon',
+    promptLength:'detailed',
+    platformMode:'general AI prompt',
+    collector:'off',
+    glitch:'off',
+    split:'off'
+  };
+
+  const intensityLabels = {
+    1:'1 — Slight shift',
+    2:'2 — Better version of me',
+    3:'3 — Very different life',
+    4:'4 — Almost another person',
+    5:'5 — Full alternate reality'
+  };
+  const stabilityLabels = {1:'stable',2:'flickering',3:'unstable',4:'collapsing',5:'fully open'};
+
+  function qs(sel, root=document){ return root.querySelector(sel); }
+  function qsa(sel, root=document){ return [...root.querySelectorAll(sel)]; }
+  function choice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function maybe(arr, chance=.5){ return Math.random()<chance ? choice(arr) : ''; }
+  function clean(val){ return (val || '').trim(); }
+  function unique(arr){ return [...new Set(arr.filter(Boolean))]; }
+  function escapeHtml(s){ return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+  function buildFields() {
+    const groups = {
+      core: qs('#coreFields'),
+      world: qs('#worldFields'),
+      story: qs('#storyFields')
+    };
+    CATEGORY_DEFS.forEach(def => {
+      state.categories[def.key] = { select:'none', custom:'' };
+      state.locks[def.key] = false;
+      const card = document.createElement('div');
+      card.className = 'field';
+      card.dataset.key = def.key;
+      card.innerHTML = `
+        <label>
+          <span>${def.title}<div class="subtext" style="margin-top:4px;">${def.hint}</div></span>
+          <span class="mini">${def.group}</span>
+        </label>
+        <select data-key="${def.key}">
+          ${def.options.map(o => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join('')}
+        </select>
+        <input type="text" data-custom-key="${def.key}" placeholder="${escapeHtml(def.custom)}" />
+        <div class="ctrls">
+          <button class="btn small" data-lock-key="${def.key}">Lock</button>
+          <button class="btn small" data-random-key="${def.key}">Randomize</button>
+          <button class="btn small" data-clear-key="${def.key}">Clear</button>
+        </div>
+      `;
+      groups[def.group].appendChild(card);
+    });
+  }
+
+  function buildOutputBoxes(containerId, defs) {
+    const wrap = qs('#'+containerId);
+    defs.forEach(([key, label]) => {
+      state.outputs[key] = '';
+      const el = document.createElement('div');
+      el.className = 'out';
+      el.innerHTML = `
+        <div class="top"><h4>${label}</h4><button class="btn small" data-copy-target="${key}">Copy</button></div>
+        <textarea id="${key}" placeholder="Generated ${label.toLowerCase()} will appear here..."></textarea>
+      `;
+      wrap.appendChild(el);
+    });
+  }
+
+  function buildChipGroup(id, values, key) {
+    const wrap = qs('#'+id);
+    values.forEach((value, idx) => {
+      const span = document.createElement('span');
+      span.className = 'chip' + (idx===0 || value===state[key] ? ' active' : '');
+      span.dataset.groupKey = key;
+      span.dataset.value = value;
+      span.textContent = value;
+      if (value !== state[key]) span.classList.remove('active');
+      wrap.appendChild(span);
+    });
+    qsa('.chip', wrap).forEach(chip => chip.addEventListener('click', () => {
+      qsa('.chip', wrap).forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      state[key] = chip.dataset.value;
+    }));
+  }
+
+  function populatePresets() {
+    const sel = qs('#presetSelect');
+    Object.keys(presetMap).sort().forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      sel.appendChild(opt);
+    });
+  }
+
+  function updateFieldState(key) {
+    const field = qs(`.field[data-key="${key}"]`);
+    const { select, custom } = state.categories[key];
+    field.classList.toggle('locked', state.locks[key]);
+    field.classList.toggle('active-select', select !== 'none' || !!clean(custom));
+    const lockBtn = qs(`[data-lock-key="${key}"]`, field);
+    lockBtn.textContent = state.locks[key] ? 'Unlock' : 'Lock';
+  }
+
+  const appearanceFallbacks = {
+    ethnicity:['African American / Black','Afro-Latina','Arab / Middle Eastern','Asian','Black British','Caribbean Black','East African','East Asian','Indigenous / Native','Latina','Mixed heritage','North African','Pacific Islander','South Asian','Southeast Asian','White','West African'],
+    skinTone:['deep ebony','deep rich brown','espresso brown','golden brown','golden deep tan','golden beige','honey brown','light beige','light brown','medium brown','olive','porcelain','rich bronze','soft tan','warm caramel'],
+    bodyType:['athletic','curvy','full-figured','mid-size','petite','plus-size','slim-thick','soft curvy','statuesque','straight-size','thick'],
+    hairTexture:['1A straight','1C straight','2B wavy','2C wavy','3A curly','3B curly','3C curly','4A coily','4B coily','4C coily','blown-out textured','locs','micro braids','silk press textured','twists','wavy'],
+    hairStyle:['afro','bantu knots','bob','braided crown','box braids','bun','finger waves','high ponytail','knotless braids','long curls','loose waves','pixie cut','shoulder-length layers','sleek straight','twist-out','updo']
+  };
+
+  function ensureAppearanceDefaults(preset = {}) {
+    const out = { ...preset };
+    Object.entries(appearanceFallbacks).forEach(([key, vals]) => {
+      if (!out[key] || out[key] === 'none') out[key] = choice(vals);
+    });
+    return out;
+  }
+
+  function bindFieldEvents() {
+    CATEGORY_DEFS.forEach(def => {
+      const sel = qs(`select[data-key="${def.key}"]`);
+      const input = qs(`input[data-custom-key="${def.key}"]`);
+      sel.addEventListener('change', () => {
+        state.categories[def.key].select = sel.value;
+        updateFieldState(def.key);
+      });
+      input.addEventListener('input', () => {
+        state.categories[def.key].custom = input.value;
+        updateFieldState(def.key);
+      });
+    });
+
+    qsa('[data-lock-key]').forEach(btn => btn.addEventListener('click', () => {
+      const key = btn.dataset.lockKey;
+      state.locks[key] = !state.locks[key];
+      updateFieldState(key);
+    }));
+
+    qsa('[data-random-key]').forEach(btn => btn.addEventListener('click', () => {
+      const key = btn.dataset.randomKey;
+      randomizeField(key);
+    }));
+
+    qsa('[data-clear-key]').forEach(btn => btn.addEventListener('click', () => {
+      const key = btn.dataset.clearKey;
+      setField(key, 'none', '');
+    }));
+
+    qsa('[data-copy-target]').forEach(btn => btn.addEventListener('click', () => {
+      const id = btn.dataset.copyTarget;
+      const el = qs('#'+id);
+      copyText(el.value || el.textContent || '');
+    }));
+  }
+
+  function bindAdvanced() {
+    buildChipGroup('moralityGroup', optionGroups.morality, 'morality');
+    buildChipGroup('publicImageGroup', optionGroups.publicImage, 'publicImage');
+    buildChipGroup('romanceGroup', optionGroups.romance, 'romance');
+    buildChipGroup('legacyGroup', optionGroups.legacy, 'legacy');
+    buildChipGroup('promptLengthGroup', optionGroups.promptLength, 'promptLength');
+    buildChipGroup('platformModeGroup', optionGroups.platformMode, 'platformMode');
+
+    qsa('.toggle').forEach(toggle => toggle.addEventListener('click', () => {
+      const group = toggle.dataset.group;
+      qsa(`.toggle[data-group="${group}"]`).forEach(t => t.classList.remove('active'));
+      toggle.classList.add('active');
+      state[group] = toggle.dataset.value;
+    }));
+
+    const intensity = qs('#timelineIntensity');
+    const stability = qs('#portalStability');
+    const intensityLabel = qs('#intensityLabel');
+    const stabilityLabel = qs('#stabilityLabel');
+    const meter = qs('#stabilityMeter');
+    const setIntensity = () => intensityLabel.textContent = intensityLabels[intensity.value];
+    const setStability = () => {
+      stabilityLabel.textContent = stabilityLabels[stability.value];
+      meter.style.width = `${stability.value * 20}%`;
+      qs('#statusText').textContent = `Portal ${stabilityLabels[stability.value]}`;
+    };
+    intensity.addEventListener('input', setIntensity);
+    stability.addEventListener('input', setStability);
+    setIntensity(); setStability();
+
+    ['cinematic','emotional','luxury','surreal','realism','tone'].forEach(name => {
+      const slider = qs(`#${name}Level`);
+      const label = qs(`#${name}Label`);
+      const update = () => label.textContent = slider.value;
+      slider.addEventListener('input', update);
+      update();
+    });
+  }
+
+  function setField(key, select='none', custom='') {
+    state.categories[key].select = select;
+    state.categories[key].custom = custom;
+    qs(`select[data-key="${key}"]`).value = select;
+    qs(`input[data-custom-key="${key}"]`).value = custom;
+    updateFieldState(key);
+  }
+
+  function randomizeField(key) {
+    if (state.locks[key]) return;
+    const def = CATEGORY_DEFS.find(x => x.key === key);
+    const pick = choice(def.options.filter(o => o !== 'none'));
+    const useCustom = Math.random() < 0.12;
+    setField(key, pick, useCustom ? '' : '');
+  }
+
+  function randomizeAll() {
+    CATEGORY_DEFS.forEach(def => { if (!state.locks[def.key]) randomizeField(def.key); });
+    const rand = (selector, values, currentSetter) => {
+      const val = choice(values);
+      state[currentSetter] = val;
+      qsa(`.chip`, qs(selector)).forEach(ch => ch.classList.toggle('active', ch.dataset.value===val));
+    };
+    rand('#moralityGroup', optionGroups.morality, 'morality');
+    rand('#publicImageGroup', optionGroups.publicImage, 'publicImage');
+    rand('#romanceGroup', optionGroups.romance, 'romance');
+    rand('#legacyGroup', optionGroups.legacy, 'legacy');
+    rand('#promptLengthGroup', optionGroups.promptLength, 'promptLength');
+    rand('#platformModeGroup', optionGroups.platformMode, 'platformMode');
+    const intensity = qs('#timelineIntensity');
+    const stability = qs('#portalStability');
+    intensity.value = String(1 + Math.floor(Math.random()*5)); intensity.dispatchEvent(new Event('input'));
+    stability.value = String(1 + Math.floor(Math.random()*5)); stability.dispatchEvent(new Event('input'));
+    ['cinematic','emotional','luxury','surreal','realism','tone'].forEach(name => {
+      const slider = qs(`#${name}Level`);
+      slider.value = String(1 + Math.floor(Math.random()*5));
+      slider.dispatchEvent(new Event('input'));
+    });
+    const glitch = Math.random() < .5 ? 'on' : 'off';
+    const split = Math.random() < .45 ? 'on' : 'off';
+    const collector = Math.random() < .55 ? 'on' : 'off';
+    qsa('.toggle[data-group="glitch"]').forEach(t => t.classList.toggle('active', t.dataset.value===glitch));
+    qsa('.toggle[data-group="split"]').forEach(t => t.classList.toggle('active', t.dataset.value===split));
+    qsa('.toggle[data-group="collector"]').forEach(t => t.classList.toggle('active', t.dataset.value===collector));
+    state.glitch = glitch; state.split = split; state.collector = collector;
+    generateMeta();
+  }
+
+  function clearAll() {
+    CATEGORY_DEFS.forEach(def => setField(def.key, 'none', ''));
+    qsa('.chip-group .chip').forEach((chip, idx) => chip.classList.toggle('active', idx===0));
+    state.morality = 'complicated'; state.publicImage='envied'; state.romance='none'; state.legacy='city icon'; state.promptLength='short'; state.platformMode='general AI prompt';
+    qsa('.toggle[data-group="glitch"]').forEach(t => t.classList.toggle('active', t.dataset.value==='off'));
+    qsa('.toggle[data-group="split"]').forEach(t => t.classList.toggle('active', t.dataset.value==='off'));
+    qsa('.toggle[data-group="collector"]').forEach(t => t.classList.toggle('active', t.dataset.value==='off'));
+    state.glitch='off'; state.split='off'; state.collector='off';
+    qs('#timelineIntensity').value = '3'; qs('#timelineIntensity').dispatchEvent(new Event('input'));
+    qs('#portalStability').value = '1'; qs('#portalStability').dispatchEvent(new Event('input'));
+    qs('#cinematicLevel').value = '3'; qs('#cinematicLevel').dispatchEvent(new Event('input'));
+    qs('#emotionalLevel').value = '3'; qs('#emotionalLevel').dispatchEvent(new Event('input'));
+    qs('#luxuryLevel').value = '4'; qs('#luxuryLevel').dispatchEvent(new Event('input'));
+    qs('#surrealLevel').value = '3'; qs('#surrealLevel').dispatchEvent(new Event('input'));
+    qs('#realismLevel').value = '4'; qs('#realismLevel').dispatchEvent(new Event('input'));
+    qs('#toneLevel').value = '3'; qs('#toneLevel').dispatchEvent(new Event('input'));
+    ['timelineName','timelineReason','whatChanged','characterNotes'].forEach(id => qs('#'+id).value='');
+    Object.keys(state.outputs).forEach(id => qs('#'+id).value='');
+    renderHistory();
+  }
+
+  function lockAll(flag) {
+    CATEGORY_DEFS.forEach(def => { state.locks[def.key] = flag; updateFieldState(def.key); });
+  }
+
+  function applyPreset(name) {
+    const preset = ensureAppearanceDefaults(presetMap[name]);
+    if (!preset) return;
+    CATEGORY_DEFS.forEach(def => {
+      setField(def.key, preset[def.key] || 'none', '');
+    });
+    state.morality = preset.morality || 'complicated';
+    state.publicImage = preset.publicImage || 'envied';
+    state.romance = preset.romance || 'none';
+    state.legacy = preset.legacy || 'city icon';
+    state.promptLength = preset.promptLength || 'detailed';
+    state.platformMode = preset.platformMode || 'general AI prompt';
+    ['moralityGroup','publicImageGroup','romanceGroup','legacyGroup','promptLengthGroup','platformModeGroup'].forEach((groupId, index) => {
+      const key = ['morality','publicImage','romance','legacy','promptLength','platformMode'][index];
+      qsa('.chip', qs('#'+groupId)).forEach(ch => ch.classList.toggle('active', ch.dataset.value === state[key]));
+    });
+    qs('#timelineIntensity').value = String(preset.timelineIntensity || 3); qs('#timelineIntensity').dispatchEvent(new Event('input'));
+    qs('#portalStability').value = String(preset.portalStability || 1); qs('#portalStability').dispatchEvent(new Event('input'));
+    qs('#cinematicLevel').value = String(preset.cinematicLevel || 3); qs('#cinematicLevel').dispatchEvent(new Event('input'));
+    qs('#emotionalLevel').value = String(preset.emotionalLevel || 3); qs('#emotionalLevel').dispatchEvent(new Event('input'));
+    qs('#luxuryLevel').value = String(preset.luxuryLevel || 4); qs('#luxuryLevel').dispatchEvent(new Event('input'));
+    qs('#surrealLevel').value = String(preset.surrealLevel || (preset.glitch === 'on' ? 4 : 3)); qs('#surrealLevel').dispatchEvent(new Event('input'));
+    qs('#realismLevel').value = String(preset.realismLevel || 4); qs('#realismLevel').dispatchEvent(new Event('input'));
+    qs('#toneLevel').value = String(preset.toneLevel || 3); qs('#toneLevel').dispatchEvent(new Event('input'));
+    state.glitch = preset.glitch || 'off';
+    state.split = preset.split || 'off';
+    state.collector = preset.collector || 'off';
+    qsa('.toggle[data-group="glitch"]').forEach(t => t.classList.toggle('active', t.dataset.value===state.glitch));
+    qsa('.toggle[data-group="split"]').forEach(t => t.classList.toggle('active', t.dataset.value===state.split));
+    qsa('.toggle[data-group="collector"]').forEach(t => t.classList.toggle('active', t.dataset.value===state.collector));
+    generateMeta();
+    generateAll();
+  }
+
+  function getFieldValue(key) {
+    const cat = state.categories[key];
+    const custom = clean(cat.custom);
+    return custom || (cat.select !== 'none' ? cat.select : '');
+  }
+
+  function joinBits(bits, sep=', ') {
+    return unique(bits.map(x => clean(x))).join(sep);
+  }
+
+  function intensityWord(level, type) {
+    const map = {
+      cinematic:['simple','clean','cinematic','sweeping','epic'],
+      emotional:['cool','felt','emotional','piercing','devastating'],
+      luxury:['polished','upscale','luxurious','opulent','ultra-luxurious'],
+      surreal:['grounded','slightly dreamlike','surreal','reality-bending','dimension-warping'],
+      realism:['stylized','semi-realistic','realistic','highly realistic','photorealistic'],
+      tone:['dark','dark-leaning','balanced','soft-leaning','soft']
+    };
+    return map[type][Math.max(1,Math.min(5,level))-1];
+  }
+
+  function applyLengthMode(text, mode) {
+    const sentences = text.split(/(?<=[.!?])\s+/).filter(Boolean);
+    if (mode === 'short') return sentences.slice(0,2).join(' ');
+    if (mode === 'medium') return sentences.slice(0,3).join(' ');
+    if (mode === 'detailed') return sentences.slice(0,5).join(' ');
+    return text;
+  }
+
+  function applyPlatformMode(text, mode) {
+    if (mode === 'ChatGPT') return `Write this as a strong ${state.promptLength} prompt for ChatGPT image and story prompting: ${text}`;
+    if (mode === 'Gemini') return `Gemini-ready ${state.promptLength} prompt with clear subject priority, sensory detail, and clean scene logic: ${text}`;
+    if (mode === 'Midjourney-style') return `${text} --stylize 250 --ar 9:16 --quality 2`;
+    if (mode === 'Leonardo-style') return `Leonardo-ready ${state.promptLength} visual prompt: ${text}`;
+    return text;
+  }
+
+  function finalizePrompt(text, c) {
+    const quality = ` Render with a ${intensityWord(c.cinematicLevel,'cinematic')}, ${intensityWord(c.luxuryLevel,'luxury')}, ${intensityWord(c.surrealLevel,'surreal')}, ${intensityWord(c.realismLevel,'realism')} finish and a ${intensityWord(c.toneLevel,'tone')} tone.`;
+    const representation = ` Preserve the selected ethnicity or heritage, skin tone, body type, hair texture, and hair style exactly as chosen. Do not default to blonde hair, Eurocentric facial features, light skin, or a thin body unless those traits were explicitly selected.`;
+    return applyPlatformMode(applyLengthMode((text + quality + representation).replace(/\s+/g,' ').trim(), c.promptLength), c.platformMode);
+  }
+
+  function getContext() {
+    const values = {};
+    CATEGORY_DEFS.forEach(def => values[def.key] = getFieldValue(def.key));
+    values.morality = state.morality;
+    values.publicImage = state.publicImage;
+    values.romance = state.romance;
+    values.legacy = state.legacy;
+    values.glitch = state.glitch;
+    values.split = state.split;
+    values.collector = state.collector;
+    values.promptLength = state.promptLength;
+    values.platformMode = state.platformMode;
+    values.intensity = Number(qs('#timelineIntensity').value);
+    values.stability = Number(qs('#portalStability').value);
+    values.cinematicLevel = Number(qs('#cinematicLevel').value);
+    values.emotionalLevel = Number(qs('#emotionalLevel').value);
+    values.luxuryLevel = Number(qs('#luxuryLevel').value);
+    values.surrealLevel = Number(qs('#surrealLevel').value);
+    values.realismLevel = Number(qs('#realismLevel').value);
+    values.toneLevel = Number(qs('#toneLevel').value);
+    values.timelineName = clean(qs('#timelineName').value);
+    values.timelineReason = clean(qs('#timelineReason').value);
+    values.whatChanged = clean(qs('#whatChanged').value);
+    values.characterNotes = clean(qs('#characterNotes').value);
+    return values;
+  }
+
+  function generateMeta() {
+    const c = getContext();
+    if (!c.timelineName) qs('#timelineName').value = generateTimelineName(c);
+    if (!c.timelineReason) qs('#timelineReason').value = generateTimelineReason(c);
+    if (!c.whatChanged) qs('#whatChanged').value = generateWhatChanged(c);
+  }
+
+  function generateTimelineName(c) {
+    const partsA = unique([
+      maybe(['Velvet','Black Marble','Midnight Gold','Soft Power','Neon Rain','Crystal','Golden Hour','Noir','Celestial','Haunted','Diamond','Paris After Dark'], .9),
+      maybe([capitalize(c.colorStory.split(' ')[0] || ''), capitalize((c.worldType || '').split(' ')[0] || ''), capitalize((c.coreEnergy || '').split(' ')[0] || ''), capitalize((c.signatureLook || '').split(' ')[0] || '')], .75)
+    ]);
+    const partsB = choice(['Timeline','Reality','Dimension','Era','Return','Portal','Life','Shift']);
+    return joinBits(partsA, ' ') + ' ' + partsB;
+  }
+
+  function generateTimelineReason(c) {
+    const openers = [
+      'This timeline opened the second you stopped settling.',
+      'This reality formed from glamour, grief, instinct, and self-respect.',
+      'This version of you arrived when power finally mattered more than permission.',
+      'This alternate life appears when the old one can no longer hold your range.',
+      'This portal responds to desire that got too strong to stay quiet.'
+    ];
+    const ext = [
+      c.timelineTwist ? `It favors women who ${c.timelineTwist}.` : '',
+      c.powerSource ? `Its power source is ${c.powerSource}.` : '',
+      c.coreEnergy ? `Everything in it moves with a ${c.coreEnergy} charge.` : '',
+      c.ethnicity || c.skinTone || c.bodyType ? `Its visual language respects her specific appearance instead of flattening her into generic beauty defaults.` : ''
+    ];
+    return joinBits([choice(openers), ...ext], ' ');
+  }
+
+  function generateWhatChanged(c) {
+    const starters = [
+      'She stopped overexplaining and built access control.',
+      'She chose elegance over urgency.',
+      'She stopped chasing and started selecting.',
+      'She became the room instead of trying to enter it.',
+      'She let silence carry more weight than performance.'
+    ];
+    const extra = [
+      c.publicImage ? `Now she is ${c.publicImage}.` : '',
+      c.legacy ? `Her legacy reads like ${c.legacy}.` : '',
+      c.romance && c.romance !== 'none' ? `In love, she is ${c.romance}.` : ''
+    ];
+    return joinBits([choice(starters), ...extra], ' ');
+  }
+
+  function generateAll() {
+    generateMeta();
+    const c = getContext();
+    const surreal = c.glitch === 'on' || c.stability >= 4;
+    const intensityAdverb = ['gently','noticeably','dramatically','almost unrecognizably','totally'][c.intensity-1] || 'dramatically';
+    const styleBits = joinBits([c.visualStyle, c.colorStory, c.atmosphere, surreal ? 'subtle reality distortion' : '', c.symbolism], ', ');
+    const characterBits = joinBits([c.identity, c.coreEnergy, c.morality + ' morality', c.publicImage, c.powerSource], ', ');
+    const settingBits = joinBits([c.worldType, c.homeBase, c.lifestyle], ', ');
+    const appearanceBits = joinBits([c.ethnicity, c.skinTone, c.bodyType, c.hairTexture, c.hairStyle, c.signatureLook, c.beauty], ', ');
+    const storyBits = joinBits([c.timelineTwist, c.storyTension, c.romance !== 'none' ? c.romance : '', c.legacy], ', ');
+    const notes = c.characterNotes ? ` Additional notes: ${c.characterNotes}.` : '';
+    const portalLine = surreal ? 'The world shows elegant glitches, impossible reflections, and dream-logic architecture.' : 'The world feels expensive, cinematic, and sharply believable.';
+
+
+    const heroPrompt = `An ${c.visualStyle || 'ultra-realistic cinematic'} portrait of ${articleize(c.identity || 'a woman')} living inside ${c.worldType || 'another reality'}, carrying a ${c.coreEnergy || 'magnetic'} presence and a ${c.publicImage || 'whispered about'} public image. She appears as ${joinBits([c.ethnicity, c.skinTone, c.bodyType, c.hairTexture, c.hairStyle], ', ') || 'a fully specified woman with intentional representation'}, dressed in ${c.signatureLook || 'signature glamour'} with ${c.beauty || 'polished beauty details'}, standing inside ${c.homeBase || 'a luxury home base'} surrounded by ${joinBits([c.colorStory, c.atmosphere, c.symbolism], ', ') || 'expensive visual detail'}. Her power comes from ${c.powerSource || 'quiet control'}, her morality reads as ${c.morality}, and the frame is lit like ${c.visualStyle || 'a prestige film still'} with full-body composition, high detail, ad-quality realism, and cinematic polish.`;
+    const worldPrompt = `A worldbuilding scene set in ${c.worldType || 'an alternate luxury world'}, showing ${articleize(c.identity || 'the main character')} moving through ${c.lifestyle || 'a rich private lifestyle'} from ${c.homeBase || 'her base of power'}. Use ${joinBits([c.colorStory, c.atmosphere, c.visualStyle], ', ')}, layer in ${c.symbolism || 'recurring symbolic motifs'}, and make the environment feel shaped by ${c.powerSource || 'her private power'}. The reality should read as ${c.legacy || 'memorable'}, ${c.publicImage || 'envied'}, and textured with details that suggest ${c.timelineTwist || 'a hidden backstory'}.`;
+    const dailyPrompt = `A cinematic daily-life moment of ${articleize(c.identity || 'this alternate self')} ${c.dailyLife || 'moving through an unusually beautiful day'}, carrying ${c.coreEnergy || 'strong presence'} energy while appearing as ${joinBits([c.ethnicity, c.skinTone, c.bodyType, c.hairTexture, c.hairStyle], ', ') || 'a fully specified woman'} and dressed in ${c.signatureLook || 'timeline-specific glamour'}. The setting reflects ${c.lifestyle || 'her lifestyle'}, the frame includes ${joinBits([c.homeBase, c.colorStory, c.atmosphere], ', ') || 'rich environmental details'}, and the mood quietly hints at ${c.storyTension || 'unresolved tension beneath the beauty'}.`;
+    const introPrompt = `Opening scene of a prestige film introducing ${articleize(c.identity || 'the timeline heroine')} through ${c.introScene || 'a dramatic arrival'}. The camera reveals ${joinBits([c.ethnicity, c.skinTone, c.bodyType, c.hairTexture, c.hairStyle, c.signatureLook], ', ') || 'her fully defined appearance'}, then widens into ${c.worldType || 'her alternate world'} with ${joinBits([c.colorStory, c.atmosphere, c.visualStyle], ', ') || 'cinematic atmosphere'}. Her face suggests ${joinBits([c.coreEnergy, c.publicImage], ' and ') || 'private power'}, and the shot should feel unforgettable, polished, and narratively loaded.`;
+    const tensionPrompt = `This timeline looks beautiful on the surface, but ${c.storyTension || 'something unresolved keeps pressing at the walls of the life she built'}. The tension is intensified by ${c.timelineTwist || 'a dangerous personal history'}, a ${c.morality} moral code, and a portal stability level of ${stabilityLabels[c.stability]}. Build the prompt so the glamour never erases the threat.`;
+    const identityBio = `${capitalize(articleize(c.identity || 'a woman'))} in ${c.worldType || 'another reality'}, known for being ${joinBits([c.coreEnergy, c.publicImage], ' and ') || 'impossible to ignore'}. Visually, she is ${joinBits([c.ethnicity, c.skinTone, c.bodyType, c.hairTexture, c.hairStyle], ', ') || 'intentionally and specifically rendered'}. She lives from ${c.homeBase || 'a luxury base'} and moves through life with ${c.lifestyle || 'private power'}, dressed in ${c.signatureLook || 'signature glamour'}. Her power comes from ${c.powerSource || 'calculated self-possession'}, her love life is ${c.romance || 'unguarded'}, and the truth that follows her is this: ${c.timelineTwist || 'she changed first and explained later'}.`;
+    const socialCaption = choice([
+      `In another timeline, I chose ${c.powerSource || 'power'} over permission.`,
+      `Somewhere in another reality, I'm already ${c.publicImage || 'her'}.`,
+      `She didn’t disappear. She relocated into ${c.timelineName || 'her real life'}.`,
+      `This version of me lives like a warning and a blessing at the same time.`
+    ]);
+    const hookLine = choice([
+      'In another timeline, she stopped asking.',
+      'Not fantasy. Just unavailable in this dimension.',
+      'She left soft evidence and a hard legacy.',
+      'The old life blinked. The portal stayed open.'
+    ]);
+    const trailerVoiceover = `In another timeline, ${articleize(c.identity || 'she')} didn’t beg to be chosen. She became ${c.publicImage || 'the woman they whispered about'}, built ${c.lifestyle || 'a life with private power'}, and let ${c.storyTension || 'the tension of the past'} chase her instead. This is ${c.timelineName || 'the reality that found her'}.`;
+    const soundtrackVibe = joinBits([
+      choice(['velvet jazz with cinematic strings','dark feminine piano and bass','luxury lounge with haunting vocals','neon heartbreak synths','divine orchestral trap']),
+      c.coreEnergy,
+      c.colorStory,
+      c.worldType
+    ], ' • ');
+    const brandTagline = choice([
+      `${capitalize(c.timelineName || 'Her other life')}: where ${c.powerSource || 'taste'} outranks noise.`,
+      `${capitalize(c.timelineName || 'The alternate reality')} — beautiful, unreadable, untouchable.`,
+      `${capitalize(c.identity || 'A woman')} built for glamour, pressure, and private power.`,
+      `Luxury with a backstory. Power with perfect lighting.`
+    ]);
+    const transformationSummary = c.split === 'on'
+      ? `Current self: the version still negotiating. Alternate self: the version who already knows the room belongs to her. The shift was ${c.whatChanged || 'a refusal to keep living small'}, and the result is a life that feels ${intensityAdverb}, richer, calmer, sharper, and less available.`
+      : 'Identity split is off. Turn it on to generate current-self vs alternate-self transformation copy.';
+
+    const tiktokCaption = `${socialCaption} ${hookLine} #AnotherTimeline #MainCharacterEnergy #LuxuryPrompt #AestheticPrompt #AlternateSelf`;
+    const instagramCaption = `${socialCaption} ${choice(['She changed dimensions, not personality.','This life came with better boundaries and better lighting.','Private power looks good on her.'])}`;
+    const youtubeHook = choice([
+      'What if your best self already exists in another timeline?',
+      'I used AI to build the life I’d have in another reality.',
+      'This prompt generator creates your luxury alternate self in seconds.'
+    ]);
+    const pinterestTitle = `${capitalize(c.timelineName || 'Luxury Alternate Self')} Moodboard Prompt Generator`;
+    const moodboardKeywords = joinBits([c.worldType, c.signatureLook, c.colorStory, c.atmosphere, c.symbolism, c.visualStyle, c.coreEnergy], ', ');
+    const affirmation = `I allow the version of me who is ${c.coreEnergy || 'powerful'} to take up more space. I trust ${c.powerSource || 'my power'}, I move with ${c.lifestyle || 'quiet luxury'}, and I stop shrinking for realities that no longer fit.`;
+    const miniMonologue = `I wasn’t made to be available to every room. In this life, I select. I protect my peace, my image, and my timing. If they can’t read me, that’s fine. They were never meant to access the whole blueprint.`;
+    const characterQuote = choice([
+      'I didn’t become cold. I became expensive to reach.',
+      'You call it distant. I call it curated.',
+      'The glow-up was spiritual, strategic, and a little bit ruthless.',
+      'I stopped introducing myself to rooms that should already know.'
+    ]);
+    const emailSubject = choice([
+      `Open your ${c.timelineName || 'alternate timeline'} ✨`,
+      `The luxury version of you is waiting`,
+      `Build your other life in one prompt`,
+      `This portal generates your cinematic alternate self`
+    ]);
+    const productTitle = choice([
+      `${capitalize(c.timelineName || 'Alternate Life')} Identity Shift Bundle`,
+      `Luxury Timeline Portal Prompt Pack`,
+      `Main Character Reality Builder`,
+      `The Alternate Self Content Kit`
+    ]);
+
+    const gavePool = [
+      `access to rooms that used to ignore you`,
+      `boundaries with better lighting`,
+      `a life that mirrors your ${c.powerSource || 'private power'}`,
+      `${c.publicImage || 'public mystique'} without overexposure`,
+      `the exact environment your nervous system always wanted`
+    ];
+    const costPool = [
+      `easy closeness`,
+      `the habit of overexplaining`,
+      `the version of you that tolerated crumbs`,
+      `certain people who only liked the smaller you`,
+      `the illusion that softness means availability`
+    ];
+    const becamePool = [
+      `more selective, more exact, and harder to read`,
+      `the kind of woman who lets silence finish the sentence`,
+      `someone whose beauty and strategy arrive together`,
+      `a person who curates access instead of begging for entry`,
+      `calm on the surface and dangerous underneath`
+    ];
+    const refusePool = [
+      `cheap urgency dressed up as opportunity`,
+      `rooms that expect brilliance without respect`,
+      `romance that confuses pursuit with devotion`,
+      `friendships that only liked your self-doubt`,
+      `luxury on the outside with chaos underneath`
+    ];
+
+    const signatureScent = joinBits([choice(['black amber','smoked vanilla','velvet rose','saffron musk','white tea and gold','dark plum incense']), c.colorStory && `with a ${c.colorStory} finish`, c.coreEnergy && `that feels ${c.coreEnergy}`], ', ');
+    const backgroundSound = joinBits([choice(['heels on marble','distant jazz through velvet walls','rain against high glass','whispered deals over low bass','soft strings under city noise','candle crackle in a silent room']), c.worldType], ' — ');
+    const favoriteDrink = choice(['espresso in a porcelain cup','champagne poured too slowly','a perfect dirty martini','rose tea in cut crystal','sparkling water with citrus and ice','dark red wine nobody touches but her']);
+    const roomTexture = joinBits([choice(['cold black marble','brushed gold trim','heavy velvet drapes','mirror-polished stone','lacquered wood','soft cashmere throws']), c.homeBase], ', ');
+    const lightingDirection = joinBits([choice(['side-lit with gold reflections','backlit through smoke and glass','soft overhead glamour lighting','moody candlelit contrast','neon edge light with clean skin highlights']), c.visualStyle], ' — ');
+    const weatherPattern = choice(['warm thunder somewhere in the distance','slow rain over the city','golden hour that lasts too long','fog that lifts only when she moves','dry desert heat against cool stone','a moonlit stillness that feels staged']);
+    const cityNoise = choice(['the city hums below her but never reaches her','traffic exists only as soft light','there is music downstairs and strategy upstairs','the silence is expensive and deliberate','private conversations echo further than engines here']);
+    const materialsSurfaces = joinBits(unique([c.colorStory, choice(['obsidian floors','gold-framed mirrors','silk upholstery','smoked glass','polished chrome','aged brass','white stone','velvet banquettes'])]), ', ');
+
+    const strangersSay = choice([
+      'She looks like she already knows the ending.',
+      'You feel the room tilt when she walks in.',
+      'There’s something too calm about her to underestimate.',
+      'She doesn’t introduce herself. Somehow you still know her name.'
+    ]);
+    const enemiesSay = choice([
+      'She never raises her voice. That is the scary part.',
+      'We should have paid attention when she got quiet.',
+      'She made power look prettier than we expected.',
+      'Nobody knows how much she sees until it is too late.'
+    ]);
+    const loversSay = choice([
+      'She makes distance feel expensive.',
+      'Being chosen by her feels like entering a private wing of the world.',
+      'She loves like someone who survived the lesson already.',
+      'You never fully have her; you get invited near her.'
+    ]);
+    const internetSays = choice([
+      'They keep calling her mysterious, but really she is just not for everybody.',
+      'Half the internet wants her routine. The other half wants answers.',
+      'She trends like a myth and disappears like a decision.',
+      'Nobody can tell whether she is healing, plotting, or both.'
+    ]);
+    const rumorFollows = choice([
+      'She disappeared once and came back with a better address and a colder stare.',
+      'Someone powerful still checks her name in private.',
+      'The money is real, but the story underneath it is even better.',
+      'Every room that loses her gets quieter afterward.'
+    ]);
+
+    const currentSelfMindset = choice([
+      'Current you still asks whether she is allowed.',
+      'Current you checks the room before taking up space.',
+      'Current you is talented, but still too available.',
+      'Current you knows what she wants but occasionally apologizes for wanting it.'
+    ]);
+    const timelineSelfMindset = choice([
+      'Timeline you decides first and explains later.',
+      'Timeline you assumes the room can catch up.',
+      'Timeline you treats self-respect like architecture, not a mood.',
+      'Timeline you knows that mystery is not dishonesty; it is boundary design.'
+    ]);
+    const currentSelfTolerates = choice([
+      'delayed clarity, mixed signals, and noisy access',
+      'opportunities that come without full respect',
+      'being useful before being valued',
+      'rooms that reward overgiving and call it loyalty'
+    ]);
+    const timelineSelfRefuses = choice([
+      'anything that asks her to dim and still smile',
+      'urgency that bypasses standards',
+      'love or business that arrives already misaligned',
+      'being visible without being protected'
+    ]);
+
+    const sceneMorningRoutine = `Morning routine scene: ${articleize(c.identity || 'she')} starts the day inside ${c.homeBase || 'her residence'} with ${favoriteDrink}, ${signatureScent}, and ${roomTexture}. The morning feels ${c.coreEnergy || 'composed'}, lit by ${weatherPattern}, while the camera catches small signs of ${c.powerSource || 'private influence'} everywhere.`;
+    const scenePowerMove = `Power move scene: ${articleize(c.identity || 'she')} makes a decisive move inside ${c.worldType || 'her timeline world'}, dressed in ${c.signatureLook || 'a commanding look'}, under ${lightingDirection}. The moment should show why her ${c.publicImage || 'reputation'} exists and why people mistake her silence for softness.`;
+    const scenePublicAppearance = `Public appearance scene: she enters a visible space through ${c.introScene || 'a polished dramatic entrance'}, with ${backgroundSound} and ${materialsSurfaces} framing the shot. Everyone reads ${c.publicImage || 'status'} before she speaks, and the beauty of the setting only sharpens the tension.`;
+    const scenePrivateVulnerability = `Private vulnerability scene: alone in ${c.homeBase || 'her private space'}, she lets the mask slip for one quiet moment. Use ${roomTexture}, ${signatureScent}, and ${weatherPattern} to make the frame intimate, but keep ${c.storyTension || 'the pressure under the life'} present in the room.`;
+    const sceneRomanticTension = c.romance === 'none'
+      ? 'Romantic tension scene: romance mode is set to none, so this timeline turns longing into absence, eye contact, and almost-confession energy instead of an active love story.'
+      : `Romantic tension scene: with romance set to ${c.romance}, the scene should feel charged, expensive, and slightly dangerous. Put her in ${c.signatureLook || 'her look'}, stage it inside ${c.worldType || 'this world'}, and let every detail suggest attraction with consequences.`;
+    const sceneEnemyEncounter = `Enemy encounter scene: she crosses paths with someone connected to ${c.storyTension || 'the unresolved past'}. The exchange is elegant, controlled, and loaded, with ${c.symbolism || 'symbolic detail'} appearing somewhere in frame like a warning.`;
+    const sceneRevenge = `Revenge scene: no shouting, no chaos — just ${articleize(c.identity || 'her')} executing a beautiful, exact return inside ${c.worldType || 'her world'}. The payoff should feel ${c.morality}, rich with ${c.colorStory || 'signature color'}, and impossible to undo once it lands.`;
+    const sceneFinalShot = `Final movie scene: the film ends on ${articleize(c.identity || 'her')} standing inside ${c.homeBase || 'the world she built'}, carrying ${c.coreEnergy || 'a complete new self-possession'} while ${backgroundSound} and ${weatherPattern} play underneath. The audience should leave feeling like the portal never really closed.`;
+    const sceneTitlePack = [
+      choice(['The Night She Returned','Velvet Access Only','The Penthouse Decision','Before the City Found Out','Smoke, Silk, and Strategy']),
+      choice(['The Room Already Knows','The Marble Silence','A Better Address','The Private Version','Where Her Name Travels']),
+      choice(['After the Old Life Blinked','When the Portal Stayed Open','The Invitation Arrived Late','The Cost of Looking Unreachable','The Quietest Power Move'])
+    ].join('\n');
+
+    const trailerConcept = `8-second trailer concept: quick cut from the current self into ${c.timelineName || 'the alternate reality'}, then reveal ${articleize(c.identity || 'the transformed woman')} stepping into ${c.worldType || 'her luxury world'} with ${c.introScene || 'a dramatic entrance'}. Final beat lands on ${c.storyTension || 'the hidden tension under the beauty'}.`;
+    const visualSequence = `Shot 1: a fracture in ordinary reality. Shot 2: ${c.symbolism || 'symbolic detail'} appears. Shot 3: wardrobe reveal with ${c.signatureLook || 'signature glam'}. Shot 4: wide view of ${c.homeBase || 'the home base'}. Shot 5: close-up of a look that says ${c.coreEnergy || 'power'}. Shot 6: final silhouette inside ${c.worldType || 'the new world'}.`;
+    const openingShot = `${c.introScene || 'A cinematic reveal'} inside ${c.worldType || 'a luxury alternate world'}, lit with ${c.atmosphere || 'soft expensive atmosphere'} and framed like ${c.visualStyle || 'a prestige film still'}.`;
+    const closingLine = choice([
+      `They thought she vanished. She changed timelines.`,
+      `The old life closed. The portal didn’t.`,
+      `In another reality, she already picked herself.`,
+      `She didn’t return softer. She returned exact.`
+    ]);
+    const soundtrackGenre = choice(['dark lounge + orchestral trap','velvet jazz + cinematic bass','neon synth + luxury soul','haunted glamour piano + strings','divine ambient pop + low drums']);
+    const soundtrackMood = joinBits([c.coreEnergy, c.publicImage, c.storyTension], ', ');
+    const soundtrackTempo = choice(['slow and hypnotic with heavy atmosphere','mid-tempo with elegant percussion and swelling strings','slow-burning with velvet bass and airy pads','measured and cinematic with sharp pauses']);
+    const soundtrackVoice = choice(['whispery and expensive','sultry but detached','angelic with hidden danger','calm, intimate, and impossible to ignore']);
+    const soundtrackTitle = choice([`${capitalize(c.timelineName || 'Black Marble')}`, 'Unavailable in This Dimension', 'Soft Power After Midnight', 'The Room Already Knows']);
+
+    const wealthSignature = joinBits([
+      `She spends like someone who values ${choice(['silence','craftsmanship','privacy','time','control'])} over volume.`,
+      `She refuses to buy ${choice(['cheap perfume','loud furniture','rushed travel','fast comfort','anything that imitates quality'])}.`,
+      `Her signature luxury habit is ${choice(['fresh flowers in impossible quantities','late-night car service with no explanation','custom scent layering','keeping one room in the home untouched and perfect','collecting objects with backstories'])}.`,
+      `There is always ${choice(['a sealed letter','a crystal lighter','an expensive pen','a scent blotter','an unread invitation'])} near her.`
+    ], ' ');
+    const cameraDirector = `Camera direction: start with ${choice(['a low-angle entrance shot','a slow push-in through smoke','a reflective mirror frame','a long-lens street reveal'])}, then cut to ${choice(['a precise beauty close-up','hands on a glass, table, or door handle','heels or steps across stone','a side profile against the city'])}. Use ${lightingDirection}, keep movement ${choice(['slow and intentional','measured and elegant','stalking and cinematic','gliding and expensive'])}, and let the final close-up land on a look that suggests ${c.storyTension || 'hidden pressure beneath luxury'}.`;
+    const portalInstability = c.glitch === 'on' || c.stability >= 4
+      ? [
+          choice(['Mirrors lag half a second behind her movements.','Candles burn the wrong color when she enters.','Elevator doors occasionally open to a floor that should not exist.','Reflections show an older or sharper version of her for one frame too long.']),
+          choice(['The skyline flickers like a memory trying to return.','One hallway in the home is always longer on the way back.','Phone calls sometimes carry voices from the previous timeline.','Midnight makes the glass in the room behave like water.'])
+        ].join(' ')
+      : 'Portal instability is low right now. Turn Glitch Mode on or raise Portal Stability to get reality tears, reflection glitches, and impossible architecture.';
+    const whatSheKnows = choice([
+      'Luxury is often just boundaries with better lighting.',
+      'Not being available is sometimes the whole upgrade.',
+      'Silence exposes more than confrontation ever could.',
+      'A beautiful life still needs structure, or it becomes expensive chaos.',
+      'Being hard to read and easy to respect is a powerful combination.'
+    ]);
+    const symbolicProp = choice(['a cracked gold mirror','a velvet invitation','a diamond lighter','a sealed black letter','a silver key','an unfinished perfume bottle','an old photograph with the face blurred out']);
+    const eraBlend = choice(['old Hollywood + futuristic luxury','Victorian noir + neon city glow','90s wealth fantasy + celestial softness','retro casino glamour + modern billionaire polish','ancient royal drama + high-fashion editorial']);
+    const fateEnding = choice([
+      'Legendary ending: she leaves the city richer, quieter, and impossible to replace.',
+      'Mysterious ending: one morning the room is pristine, but she is gone and the scent remains.',
+      'Peaceful ending: she finally builds a life no emergency can enter.',
+      'Dangerous ending: she keeps the empire, but someone from the first life finds the door.',
+      'Mythic ending: in ten years people still tell the story wrong, but they still tell it.'
+    ]);
+
+    const timelineCard = `Timeline Name: ${qs('#timelineName').value}
+Identity: ${c.identity || '—'}
+World: ${c.worldType || '—'}
+Energy: ${c.coreEnergy || '—'}
+Power Source: ${c.powerSource || '—'}
+Lifestyle: ${c.lifestyle || '—'}
+Look: ${c.signatureLook || '—'}
+Home Base: ${c.homeBase || '—'}
+Twist: ${c.timelineTwist || '—'}
+Tension: ${c.storyTension || '—'}
+Public Image: ${c.publicImage}
+Romance: ${c.romance}
+Legacy: ${c.legacy}
+What This Life Gave You: ${choice(gavePool)}
+What This Life Cost You: ${choice(costPool)}
+The Rumor: ${rumorFollows}
+Symbolic Prop: ${symbolicProp}
+Why This Timeline Exists: ${qs('#timelineReason').value}
+What Changed: ${qs('#whatChanged').value}`;
+
+    const outputValues = {
+      heroPrompt: finalizePrompt(heroPrompt, c), worldPrompt: finalizePrompt(worldPrompt, c), dailyPrompt: finalizePrompt(dailyPrompt, c), introPrompt: finalizePrompt(introPrompt, c), tensionPrompt: finalizePrompt(tensionPrompt, c), identityBio: applyLengthMode(identityBio, c.promptLength), socialCaption, hookLine, trailerVoiceover: applyLengthMode(trailerVoiceover, c.promptLength), soundtrackVibe, brandTagline, transformationSummary: applyLengthMode(transformationSummary, c.promptLength),
+      tiktokCaption, instagramCaption, youtubeHook, pinterestTitle, moodboardKeywords, affirmation, miniMonologue, characterQuote, emailSubject, productTitle,
+      timelineGave: choice(gavePool), timelineCost: choice(costPool), whatBecame: choice(becamePool), neverAcceptAgain: choice(refusePool),
+      signatureScent, backgroundSound, favoriteDrink, roomTexture, lightingDirection, weatherPattern, cityNoise, materialsSurfaces,
+      strangersSay, enemiesSay, loversSay, internetSays, rumorFollows,
+      currentSelfMindset, timelineSelfMindset, currentSelfTolerates, timelineSelfRefuses,
+      sceneMorningRoutine, scenePowerMove, scenePublicAppearance, scenePrivateVulnerability, sceneRomanticTension, sceneEnemyEncounter, sceneRevenge, sceneFinalShot, sceneTitlePack,
+      trailerConcept, visualSequence, openingShot, closingLine, soundtrackGenre, soundtrackMood, soundtrackTempo, soundtrackVoice, soundtrackTitle, timelineCard,
+      wealthSignature, cameraDirector, portalInstability, whatSheKnows, symbolicProp, eraBlend, fateEnding,
+      signatureTimeline: applyLengthMode(`Your signature timeline is ${qs('#timelineName').value || generateTimelineName(c)} — the most iconic version of you: ${c.identity || 'a powerful woman'} moving through ${c.worldType || 'an alternate luxury world'} with ${c.coreEnergy || 'main character'} energy, living a ${c.lifestyle || 'high-glam'} life shaped by ${c.powerSource || 'inner force'}. This dimension feels ${intensityWord(c.cinematicLevel,'cinematic')}, ${intensityWord(c.emotionalLevel,'emotional')}, and ${intensityWord(c.luxuryLevel,'luxury')}.`, c.promptLength),
+      signatureIdentity: finalizePrompt(`The most iconic version of this character is ${articleize(c.identity || 'main character')} with ${c.signatureLook || 'a signature look'}, ${c.beauty || 'expensive beauty'}, and a presence people describe as ${c.publicImage}. Put her in ${c.homeBase || c.worldType || 'her world'} and make every detail read like her final form.`, c),
+      signatureQuote: choice([`I stopped chasing access and became the room.`,`I do not return to places that required me to shrink.`,`My softness survived. My standards got sharper.`,`I built a life that answers to my name only.`]),
+      signatureScene: finalizePrompt(`Create the strongest single scene from this timeline: ${c.introScene || 'a major entrance'}, inside ${c.worldType || 'a rich alternate world'}, with ${c.atmosphere || 'charged atmosphere'}, ${c.symbolism || 'visual symbolism'}, and a final look that says ${c.timelineTwist || 'she changed the rules'}.`, c),
+      signatureMessage: choice([`This is your dimension now. Stop asking the old life for a key.`,`Your other self did not wait for permission. She built architecture around her standards.`,`The portal stayed open because you were always meant to outgrow the first room.`,`You are not late. You are becoming visible in the right reality.`]),
+      qualityProfile: `Quality Profile — cinematic: ${c.cinematicLevel}/5 (${intensityWord(c.cinematicLevel,'cinematic')}), emotional: ${c.emotionalLevel}/5 (${intensityWord(c.emotionalLevel,'emotional')}), luxurious: ${c.luxuryLevel}/5 (${intensityWord(c.luxuryLevel,'luxury')}), surreal: ${c.surrealLevel}/5 (${intensityWord(c.surrealLevel,'surreal')}), realistic: ${c.realismLevel}/5 (${intensityWord(c.realismLevel,'realism')}), tone: ${c.toneLevel}/5 (${intensityWord(c.toneLevel,'tone')}). Length mode: ${c.promptLength}. Platform mode: ${c.platformMode}.`,
+      platformGuide: `Platform formatting guide: ${c.platformMode} mode is active. ${c.platformMode==='Midjourney-style' ? 'Outputs include direct stylization syntax and visual shorthand.' : c.platformMode==='Gemini' ? 'Outputs are written with clean subject priority, grounded detail, and strong scene logic.' : c.platformMode==='ChatGPT' ? 'Outputs are phrased like direct instructions ChatGPT can expand or refine.' : c.platformMode==='Leonardo-style' ? 'Outputs favor descriptive visual language and prompt-friendly composition notes.' : 'Outputs stay flexible for general AI tools.'}`,
+      editionCard: `${c.collector==='on' ? 'Collector Edition' : 'Standard Edition'} — ${qs('#timelineName').value || generateTimelineName(c)} | ${choice(['Edition No. 001','Edition No. 002','Edition No. 003','Edition No. 004','Edition No. 005'])} | Tagline: ${brandTagline} | Quote: ${choice([`She changed timelines, not standards.`,`Soft power, hard boundaries.`,`Unreadable, unforgettable, unavailable.`,`The room adjusts when she enters.`])} | Fate: ${fateEnding}`
+    };
+    Object.entries(outputValues).forEach(([id,val]) => { qs('#'+id).value = val; state.outputs[id] = val; });
+  }
+
+  function articleize(text) {
+    if (!text) return 'a woman';
+    const t = text.trim();
+    if (/^(a|an|the)\s/i.test(t)) return t;
+    return /^[aeiou]/i.test(t) ? `an ${t}` : `a ${t}`;
+  }
+
+  function capitalize(s){ return s ? s.charAt(0).toUpperCase()+s.slice(1) : ''; }
+
+  async function copyText(text) {
+    try {
+      await navigator.clipboard.writeText(text || '');
+      qs('#statusText').textContent = 'Copied';
+      setTimeout(() => qs('#statusText').textContent = `Portal ${stabilityLabels[qs('#portalStability').value]}`, 1200);
+    } catch {
+      alert('Copy failed. Your browser blocked it.');
+    }
+  }
+
+  function getSavePayload() {
+    return {
+      savedAt: new Date().toLocaleString(),
+      categories: JSON.parse(JSON.stringify(state.categories)),
+      locks: JSON.parse(JSON.stringify(state.locks)),
+      controls: {
+        morality:state.morality,
+        publicImage:state.publicImage,
+        romance:state.romance,
+        legacy:state.legacy,
+        promptLength:state.promptLength,
+        platformMode:state.platformMode,
+        collector:state.collector,
+        glitch:state.glitch,
+        split:state.split,
+        timelineIntensity:qs('#timelineIntensity').value,
+        portalStability:qs('#portalStability').value,
+        cinematicLevel:qs('#cinematicLevel').value,
+        emotionalLevel:qs('#emotionalLevel').value,
+        luxuryLevel:qs('#luxuryLevel').value,
+        surrealLevel:qs('#surrealLevel').value,
+        realismLevel:qs('#realismLevel').value,
+        toneLevel:qs('#toneLevel').value
+      },
+      meta: {
+        timelineName:qs('#timelineName').value,
+        timelineReason:qs('#timelineReason').value,
+        whatChanged:qs('#whatChanged').value,
+        characterNotes:qs('#characterNotes').value
+      },
+      outputs: Object.fromEntries(Object.keys(state.outputs).map(id => [id, qs('#'+id).value]))
+    };
+  }
+
+  function saveHistory() {
+    const payload = getSavePayload();
+    const list = JSON.parse(localStorage.getItem('timeline_history') || '[]');
+    list.unshift(payload);
+    localStorage.setItem('timeline_history', JSON.stringify(list.slice(0, 40)));
+    renderHistory();
+  }
+
+  function loadHistory(index) {
+    const list = JSON.parse(localStorage.getItem('timeline_history') || '[]');
+    const item = list[index];
+    if (!item) return;
+    Object.entries(item.categories || {}).forEach(([key,val]) => setField(key, val.select, val.custom));
+    Object.entries(item.locks || {}).forEach(([key,val]) => { state.locks[key] = val; updateFieldState(key); });
+    state.morality = item.controls.morality; state.publicImage = item.controls.publicImage; state.romance = item.controls.romance; state.legacy = item.controls.legacy; state.glitch = item.controls.glitch; state.split = item.controls.split;
+    ['moralityGroup','publicImageGroup','romanceGroup','legacyGroup'].forEach((groupId, index2) => {
+      const key = ['morality','publicImage','romance','legacy'][index2];
+      qsa('.chip', qs('#'+groupId)).forEach(ch => ch.classList.toggle('active', ch.dataset.value===state[key]));
+    });
+    qsa('.toggle[data-group="glitch"]').forEach(t => t.classList.toggle('active', t.dataset.value===state.glitch));
+    qsa('.toggle[data-group="split"]').forEach(t => t.classList.toggle('active', t.dataset.value===state.split));
+    qs('#timelineIntensity').value = item.controls.timelineIntensity; qs('#timelineIntensity').dispatchEvent(new Event('input'));
+    qs('#portalStability').value = item.controls.portalStability; qs('#portalStability').dispatchEvent(new Event('input'));
+    qs('#timelineName').value = item.meta.timelineName || '';
+    qs('#timelineReason').value = item.meta.timelineReason || '';
+    qs('#whatChanged').value = item.meta.whatChanged || '';
+    qs('#characterNotes').value = item.meta.characterNotes || '';
+    Object.entries(item.outputs || {}).forEach(([id,val]) => { const el = qs('#'+id); if (el) el.value = val; });
+  }
+
+  function deleteHistory(index) {
+    const list = JSON.parse(localStorage.getItem('timeline_history') || '[]');
+    list.splice(index,1);
+    localStorage.setItem('timeline_history', JSON.stringify(list));
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const list = JSON.parse(localStorage.getItem('timeline_history') || '[]');
+    const wrap = qs('#historyList');
+    if (!list.length) {
+      wrap.innerHTML = '<div class="history-item"><div class="history-meta">No saved timelines yet.</div></div>';
+      return;
+    }
+    wrap.innerHTML = list.map((item, index) => `
+      <div class="history-item">
+        <div class="history-top">
+          <div>
+            <div class="timeline-name">${escapeHtml(item.meta.timelineName || 'Untitled Timeline')}</div>
+            <div class="history-meta">${escapeHtml(item.savedAt || '')}</div>
+          </div>
+          <div class="ctrls">
+            <button class="btn small" data-load-history="${index}">Reload</button>
+            <button class="btn small" data-copy-history="${index}">Copy Card</button>
+            <button class="btn small danger" data-delete-history="${index}">Delete</button>
+          </div>
+        </div>
+        <div class="snippet">${escapeHtml((item.outputs.identityBio || '').slice(0, 220) || 'No preview text')}</div>
+      </div>
+    `).join('');
+    qsa('[data-load-history]').forEach(btn => btn.onclick = () => loadHistory(Number(btn.dataset.loadHistory)));
+    qsa('[data-copy-history]').forEach(btn => btn.onclick = () => {
+      const item = list[Number(btn.dataset.copyHistory)];
+      copyText(item.outputs.timelineCard || item.outputs.identityBio || '');
+    });
+    qsa('[data-delete-history]').forEach(btn => btn.onclick = () => deleteHistory(Number(btn.dataset.deleteHistory)));
+  }
+
+  function download(filename, content, type='text/plain') {
+    const blob = new Blob([content], {type});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }
+
+  function exportTxt() {
+    const ctx = getContext();
+    const text = [
+      `TIMELINE NAME: ${qs('#timelineName').value}`,
+      `WHY THIS TIMELINE EXISTS: ${qs('#timelineReason').value}`,
+      `WHAT CHANGED: ${qs('#whatChanged').value}`,
+      '',
+      '=== CATEGORIES ===',
+      ...CATEGORY_DEFS.map(def => `${def.title}: ${getFieldValue(def.key) || 'none'}`),
+      '',
+      '=== ADVANCED ===',
+      `Morality: ${state.morality}`,
+      `Public Image: ${state.publicImage}`,
+      `Romance: ${state.romance}`,
+      `Legacy: ${state.legacy}`,
+      `Prompt Length: ${state.promptLength}`,
+      `Platform Mode: ${state.platformMode}`,
+      `Collector Mode: ${state.collector}`,
+      `Portal Glitch: ${state.glitch}`,
+      `Identity Split: ${state.split}`,
+      `Timeline Intensity: ${qs('#timelineIntensity').value}`,
+      `Portal Stability: ${qs('#portalStability').value}`,
+      `Cinematic Level: ${qs('#cinematicLevel').value}`,
+      `Emotional Level: ${qs('#emotionalLevel').value}`,
+      `Luxury Level: ${qs('#luxuryLevel').value}`,
+      `Surreal Level: ${qs('#surrealLevel').value}`,
+      `Realism Level: ${qs('#realismLevel').value}`,
+      `Tone Level: ${qs('#toneLevel').value}`,
+      '',
+      '=== OUTPUTS ===',
+      ...Object.keys(state.outputs).map(id => `${id}:\n${qs('#'+id).value}\n`)
+    ].join('\n');
+    const safe = (qs('#timelineName').value || 'timeline').replace(/[^a-z0-9]+/gi,'_').toLowerCase();
+    download(`${safe}.txt`, text);
+  }
+
+  function exportJson() {
+    const safe = (qs('#timelineName').value || 'timeline').replace(/[^a-z0-9]+/gi,'_').toLowerCase();
+    download(`${safe}.json`, JSON.stringify(getSavePayload(), null, 2), 'application/json');
+  }
+
+  function exportCard() {
+    const safe = (qs('#timelineName').value || 'timeline').replace(/[^a-z0-9]+/gi,'_').toLowerCase();
+    download(`${safe}_character_sheet.txt`, qs('#timelineCard').value || '');
+  }
+
+  function downloadSelf() {
+    download('life_in_another_timeline_generator.html', document.documentElement.outerHTML, 'text/html');
+  }
+
+  function bindButtons() {
+    qs('#generateBtn').onclick = generateAll;
+    qs('#shiftBtn').onclick = () => { randomizeAll(); generateAll(); };
+    qs('#randomizeBtn').onclick = randomizeAll;
+    qs('#lockAllBtn').onclick = () => lockAll(true);
+    qs('#unlockAllBtn').onclick = () => lockAll(false);
+    qs('#clearBtn').onclick = clearAll;
+    qs('#saveBtn').onclick = saveHistory;
+    qs('#copyAllBtn').onclick = () => copyText(Object.keys(state.outputs).map(id => `${id}:\n${qs('#'+id).value}`).join('\n\n'));
+    qs('#contentSuiteBtn').onclick = generateAll;
+    qs('#trailerBtn').onclick = generateAll;
+    qs('#soundtrackBtn').onclick = generateAll;
+    qs('#applyPresetBtn').onclick = () => applyPreset(qs('#presetSelect').value);
+    qs('#randomPresetBtn').onclick = () => { const names = Object.keys(presetMap); const name = choice(names); qs('#presetSelect').value = name; applyPreset(name); };
+    qs('#genNameBtn').onclick = () => { qs('#timelineName').value = generateTimelineName(getContext()); };
+    qs('#genReasonBtn').onclick = () => { qs('#timelineReason').value = generateTimelineReason(getContext()); };
+    qs('#genChangedBtn').onclick = () => { qs('#whatChanged').value = generateWhatChanged(getContext()); };
+    qs('#exportTxtBtn').onclick = exportTxt;
+    qs('#exportJsonBtn').onclick = exportJson;
+    qs('#exportCardBtn').onclick = exportCard;
+    qs('#downloadHtmlBtn').onclick = downloadSelf;
+    qs('#scrollTopBtn').onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+    qs('#scrollBottomBtn').onclick = () => window.scrollTo({top:document.body.scrollHeight, behavior:'smooth'});
+  }
+
+  function init() {
+    buildFields();
+    buildOutputBoxes('mainOutputs', OUTPUT_DEFS.main);
+    buildOutputBoxes('contentOutputs', OUTPUT_DEFS.content);
+    buildOutputBoxes('sensoryOutputs', OUTPUT_DEFS.sensory);
+    buildOutputBoxes('sceneOutputs', OUTPUT_DEFS.scene);
+    buildOutputBoxes('trailerOutputs', OUTPUT_DEFS.trailer);
+    buildOutputBoxes('portalOutputs', OUTPUT_DEFS.portal);
+    buildOutputBoxes('signatureOutputs', OUTPUT_DEFS.signature);
+    populatePresets();
+    bindFieldEvents();
+    bindAdvanced();
+    bindButtons();
+    CATEGORY_DEFS.forEach(def => updateFieldState(def.key));
+    renderHistory();
+    generateMeta();
+    generateAll();
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
